@@ -136,7 +136,7 @@ Plugin manager: Vim Packager
 
 Plugin: [**kristijanhusak/vim-packager**](https://github.com/kristijanhusak/vim-packager)
 
-![PackagerStatus command output](../../assets/images/fjtv/vim-packager.png)
+![](../../assets/images/fjtv/vim-packager.png)
 
 With Vim 8, native package management was included. By cloning the plugin directory into `~/.vim/pack/<whatever>` Vim will pick up the plugin and automatically load it. However, since in order to find my optimum plugin setup I would be installing, testing, and uninstalling many plugins, I decided to save myself some manual labour and use a plugin manager - albeit one that keeps a close tie to that inbuilt solution. I chose Vim Packager, as it's `:PackagerInstall` command simply does the aforementioned cloning into the default package folder for you, whilst `:PackagerClean` handles `rm -r`-ing unused plugin directories. As such, it is a very simple wrapper on top of pre-existing functionality in Vim.
 
