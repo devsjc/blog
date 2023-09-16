@@ -1,0 +1,53 @@
+name: CI
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN
+# * Allows deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+
+jobs:
+  # Define a job to convert the markdown files to HTML
+  pandoc-convert:
+    environment:
+      name: github-pages
+    runs-on: ubuntu-latest
+    container: pandoc/core:latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: List files
+        run: |
+          find . -type f -name "*.md" -exec echo {} \;
+        
+  # Define a job to deploy the static files
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          # Upload entire repository
+          path: '.'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
