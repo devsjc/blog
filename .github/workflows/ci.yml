@@ -19,18 +19,27 @@ concurrency:
 
 jobs:
   # Define a job to convert the markdown files to HTML
-  pandoc-convert:
-    environment:
-      name: github-pages
+  generate-site:
     runs-on: ubuntu-latest
     container: pandoc/core:latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: List files
+      - name: Convert markdown to HTML
         run: |
-          find . -type f -name "*.md" -exec echo {} \;
+          find . -type f -name "*.md" -exec bash -c \
+            'pandoc \
+            --template assets/templates/template.html \
+            --toc=true \
+            -o "${0%.*}.html" "$0"' \
+            {} \;
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: '.'
         
   # Define a job to deploy the static files
   deploy:
@@ -38,16 +47,12 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    needs: generate-site
+    
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
-        with:
-          # Upload entire repository
-          path: '.'
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+          name: github-pages 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
