@@ -30,9 +30,9 @@ jobs:
           find . -type f -name "*.md" -exec sh -c \
             'pandoc \
             --template assets/templates/template.html \
-            --toc=true \
-            -o "${0%.*}.html" "$0"; 
-            rm "%0"' \
+            --toc\
+            -o "${0%.*}.html" "${0}"; 
+            rm "%{0}"' \
             {} \;
       - name: Setup Pages
         uses: actions/configure-pages@v3
