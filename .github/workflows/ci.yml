@@ -28,11 +28,7 @@ jobs:
       - name: Convert markdown to HTML
         run: |
           find . -type f -name "*.md" -exec sh -c \
-            'pandoc \
-            --template assets/templates/template.html \
-            --toc\
-            -o "${0%.*}.html" "${0}"; 
-            rm "%{0}"' \
+            'echo "$0"; echo "${0%.md}.html"' \
             {} \;
       - name: Setup Pages
         uses: actions/configure-pages@v3
