@@ -7,9 +7,9 @@ date: 15 September, 2023
 tags: [vim, vimrc]
 ---
 
-![](../../assets/images/fjtv/vim-fzf.png)
-
 Short on time? Skip straight to the [configuration](#vim-configuration)!
+
+![](../../assets/images/fjtv/vim-fzf.png)
 
 Background: Why do this at all?
 ===============================
