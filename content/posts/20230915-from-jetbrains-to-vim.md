@@ -136,6 +136,8 @@ Plugin manager: Vim Packager
 
 Plugin: [**kristijanhusak/vim-packager**](https://github.com/kristijanhusak/vim-packager)
 
+![PackagerStatus command output](../../assets/images/fjtv/vim-packager.png)
+
 With Vim 8, native package management was included. By cloning the plugin directory into `~/.vim/pack/<whatever>` Vim will pick up the plugin and automatically load it. However, since in order to find my optimum plugin setup I would be installing, testing, and uninstalling many plugins, I decided to save myself some manual labour and use a plugin manager - albeit one that keeps a close tie to that inbuilt solution. I chose Vim Packager, as it's `:PackagerInstall` command simply does the aforementioned cloning into the default package folder for you, whilst `:PackagerClean` handles `rm -r`-ing unused plugin directories. As such, it is a very simple wrapper on top of pre-existing functionality in Vim.
 
 Adding packages with Vim packager is as simple as adding
@@ -155,6 +157,8 @@ Fuzzy finding and search: FZF
 -----------------------------
 
 Plugin: [**junegunn/fzf.vim**](https://github.com/junegunn/fzf.vim)
+
+![](../../assets/images/fjtv/vim-fzf.png)
 
 FZF is a fast fuzzy search for vim, invaluable for navigating both inter- and intra- file. This is the first major deviation from usual IDE behaviour, as instead of relying on an always-visible file tree to navigate a project and select files, we will utilise FZF's file search capabilities. The plugin does not include the binaries, so be sure to install `fzf` and `the-silver-searcher` (I use [homebrew](https://brew.sh/)).
 
@@ -194,6 +198,8 @@ LSP Features: LSP
 -----------------
 
 Plugin: [**yegappan/lsp**](https://github.com/yegappan/lsp)
+
+![](../../assets/images/fjtv/vim-lsp.png)
 
 The first plugin we could point to to back up the "modern" adjective in the title, *lsp* is written in and for Vim9, the latest major version of Vim at time of writing. This plugin is going to be used to perform two of the four features mentioned above; *Auto Completion*, and *LSP Features* (such as *GoTo Definition*, *Rename*, *Find References*). We incorporate it as follows, again remembering to set the `call` line within the packager function at the top of the `vimrc`, and running `:source ~/.vim/vimrc` then `:PackagerInstall` to clone the plugin:
 
@@ -294,6 +300,8 @@ Linting and Fixing: ALE
 
 Plugin: [**dense-analysis/ale**](https://github.com/dense-analysis/ale)
 
+![](../../assets/images/fjtv/vim-ale.png)
+
 This plugin carries out the *Linting* and *Fixing* actions mentioned in the background section. As a result, when errors are found in our code, we will be informed of them via signs in the gutter, highlights on the words themselves, and **virtualtext** that will appear after the line if the cursor rests upon it and it contains an error. This is vital to catching code mistakes early.
 
 Whilst ALE also purports to bundle LSP features, we elect to ignore those in favour of our standalone LSP plugin above. Again, our configuration specifies examples for Python and Go, but again, much more info can be found in the [ALE documentation](https://github.com/dense-analysis/ale/blob/master/doc/ale.txt).
@@ -342,6 +350,8 @@ nnoremap <leader>L :ALEFix<CR>
 ```
 
 Much like with the LSP plugin above, we now have to tell ALE what linters and fixers to use for what filetypes. This is done by the `g:ale_fixers` and `g:ale_linters` variables. For python I am a fan of using `ruff` as it is extremely quick and can be configured by default in a `pyproject.toml`, but you are free to choose from your favourite linters according to the [full list of supported tools](https://github.com/dense-analysis/ale/blob/master/supported-tools.md).
+
+![](../../assets/images/fjtv/vim-ale-loclist.png)
 
 I won't discuss much of the rest of the config here, as it should be increasingly familiar how these `vimrc` configurations work, and the comments outline the purpose of the line sets. However, for any configuration variables you want to know more details about, it will be good practice now for you to find said details for yourself in the documentation, either [in the plugins' `doc` folder](https://github.com/dense-analysis/ale/blob/master/doc/ale.txt) (where you can look to find helper text files in most all Vim plugins), or in Vim itself using `:h ale`.
 
@@ -456,6 +466,8 @@ Bonus 2: File tree
 
 Plugin: [**lambdalisue/fern.vim**](https://github.com/lambdalisue/fern.vim])
 
+![](../../assets/images/fjtv/vim-fern.png)
+
 Another bonus, because Vim has a perfectly serviceable file tree already in **netrw**. If you search online, many Vim users urge new Vim users to fight the urge to immediately install file tree plugins such as [preservim/nerdtree](https://github.com/preservim/nerdtree) for this reason. It's true, if you get quick and comfortable with FZF then you will find those times you require a tree to come with increasing rareness. However, when working on a big project, or a new project, filetrees are helpful to begin with to gain an understanding of the layout of the project. So it's up to you - if you feel you're able to survive with `netrw` alone, skip this; but if you want the familiarity of a file tree to fall back on, then add the following to your `vimrc`:
 
 ```python
@@ -478,6 +490,8 @@ Bonus 3: Remapping cheat sheet
 ------------------------------
 
 Plugin: [**liuchengxu/vim-which-key**](https://github.com/liuchengxu/vim-which-key)
+
+![](../../assets/images/fjtv/vim-whichkey.png)
 
 We've made a fair few custom keybinds for our leader key in this config, so how do we go about remembering them all? With a bit of luck, you've followed my advice and incrementally added in each plugin until you feel confident remembering their mappings, but in case a refresher is ever needed, we can use the *Which Key* plugin to jog our memory:
 
