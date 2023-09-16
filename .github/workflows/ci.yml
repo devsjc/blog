@@ -27,7 +27,7 @@ jobs:
       # * Deletes the markdown afterwards
       - name: Convert markdown to HTML
         run: |
-          find content -type f -name "*.md" -exec sh -c \
+          find posts -type f -name "*.md" -exec sh -c \
             'pandoc --template assets/templates/post.html --toc -o "${0%.md}.html" "$0"; \
               rm "$0";' \
             {} \;
