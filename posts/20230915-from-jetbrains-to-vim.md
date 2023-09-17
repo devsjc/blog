@@ -1,10 +1,10 @@
 ---
 title: "From JetBrains to Vim"
-subtitle: "A Modern Vim configuration for the Vim Impaired"
+subtitle: "A Modern Vim configuration and plugin set"
 description: "A walkthrough detailing a Vim setup aimed at emulating the most-used features from JetBrains IDEs."
 author: devsjc
 date: 15 September, 2023
-tags: [vim, vimrc]
+tags: [vim, vimrc, python]
 ---
 
 ![](../assets/images/fjtv/vim-fzf.png)
