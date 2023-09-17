@@ -7,9 +7,9 @@ date: 15 September, 2023
 tags: [vim, vimrc]
 ---
 
-Short on time? Skip straight to the [configuration](#vim-configuration)!
-
 ![](../assets/images/fjtv/vim-fzf.png)
+
+Short on time? Skip straight to the [configuration](#vim-configuration)!
 
 Background: Why do this at all?
 ===============================
@@ -422,7 +422,7 @@ call a:packager.add('bluz71/vim-mistfly-statusline')
 set noshowmode laststatus=2
 ```
 
-QOL feature: Testing
+QOL feature 5: Testing
 --------------------
 
 Plugin: [**vim-test/vim-test**](https://github.com/vim-test/vim-test])
