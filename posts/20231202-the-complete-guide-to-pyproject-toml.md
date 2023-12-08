@@ -42,7 +42,7 @@ Lets get to work cleaning up the roots of those repos!
 Ditching requirements.txt
 =========================
 
-The first piece of functionality we'll investigate is that of managing your dependencies with `pyproject.toml`. The main metadata section of the `pyproject.toml` file comes under the `[project]` header, and its this section that dependencies are defined, using the `dependencies` key. Lets create a basic file with the mandatory keys, and add some dependencies. Remember to create a new virtual environment with your favourite venv tool first!
+The first piece of functionality we'll investigate is that of managing your dependencies with `pyproject.toml`. The main metadata section of the `pyproject.toml` file comes under the `[project]` header, and its this section that dependencies are defined, using the `dependencies` key. Lets create a basic file with the mandatory keys, and add some dependencies. Remember to first create a new virtual environment with your favourite virtual environment tool (most likely `venv` [[2]](https://drive.google.com/file/d/1U5d5SiXLVkzDpS0i1dJIA4Hu5Qg704T9/view))!
 
 ```toml
 [project]
