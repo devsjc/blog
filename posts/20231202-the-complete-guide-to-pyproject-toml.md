@@ -77,7 +77,7 @@ For more information on editable installations, see the Setuptools' guide to Dev
 Optional dependencies
 ---------------------
 
-The `pyproject.toml` file improves upon `requirements.txt` by allowing the specification of *development dependencies* - dependencies required for local development of the project, but not integral to running it when distributed. These could be test-specific or for [linting](TODO: Link to Linting Section) requirements, and can be grouped by a key describing their utility in the `pyproject.toml` file.
+The `pyproject.toml` file improves upon `requirements.txt` by allowing the specification of *development dependencies* - dependencies required for local development of the project, but not integral to running it when distributed. These could be test-specific or for [linting](#configuring-linters) requirements, and can be grouped by a key describing their utility in the `pyproject.toml` file.
 
 
 Configuring Linters
