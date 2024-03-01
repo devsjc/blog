@@ -61,15 +61,15 @@ Since pip doesn't yet have the functionality for automatically modifying `pyproj
 $ pip install -e .
 ```
 
-The dependencies will now be installed into the `site_packages` folder of your virtual environment.
+The dependencies will now be installed into the `site_packages` folder of your virtual environment. (For non-python users, this is similar to a `node-modules` or `vendor` folder - it's where your build frontend stores dependency source code.)
 
 
 Editable and normal installations
 ---------------------------------
 
-What's that `-e` flag? This tells pip to perform an *editable* install, which is the install mode best for development of a project. Normally when you install a project, pip copies the source code files as distributed into your site-packages folder. When you instantiate the package, it reads the code from that folder. But when you're developing a project, you want your changes to the source code to be reflected in imports of your package, for instance when writing tests or trying out command-line invocations. As such, you can instruct pip to install your project in editable mode, which means imports of the project resolve at the source code in the repo. This then acts as the source of truth for the package and enables you to quickly iterate on and test code changes. This is a golden rule when developing with a `pyproject.toml` file: **when working locally, always do an editable install of your package**.
+What's that `-e` flag? This tells pip to perform an *editable* install, which is the install mode best for development of a project. Normally when you install a dependency (such as `requests`), pip copies the source code files as distributed into your site-packages folder. When you instantiate or import the package, it reads the code from that folder. But when you're developing your own project, you want your changes to the source code to be immediately reflected in instantiation, for instance when importing into tests or trying out command-line invocations. As such, you can instruct pip to install your project in editable mode, which means imports of the project resolve at the source code in the repo. This then acts as the source of truth for the package (instead of a copy in site-packages) and enables you to quickly iterate on and test code changes. This is a golden rule when developing with a `pyproject.toml` file: **when working locally, always do an editable install of your package**.
 
-It is all to easy to mess up your PYTHONPATH, and import your package in normal mode, halting development progress whilst you recreate your virtual environment. You can (and should) further ensure import consistency by laying out your python project in the `src` layout, again as recommended by `python.org`[[4]](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/).
+It is all to easy to mess up your PYTHONPATH, and accidentally import your package in normal mode, halting development progress whilst you recreate your virtual environment. You can (and should) further ensure import consistency by laying out your python project in the `src` layout, again as recommended by `python.org`[[4]](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/).
 
 For more information on editable installations, see the Setuptools' guide to Development Mode[[8]](https://setuptools.pypa.io/en/latest/userguide/development_mode.html).
 
@@ -77,7 +77,7 @@ For more information on editable installations, see the Setuptools' guide to Dev
 Optional dependencies
 ---------------------
 
-The `pyproject.toml` file improves upon `requirements.txt` by allowing the specification of *development dependencies* - dependencies required for local development of the project, but not integral to running it when distributed. These could be test-specific or for [linting](#configuring-linters) requirements, and can be grouped by a key describing their utility in the `pyproject.toml` file.
+The `pyproject.toml` file improves upon `requirements.txt` by allowing the specification of *optional dependencies* - dependencies required for parts of local development of the project, but not integral to running it when distributed. These could be test-specific or for [linting](#configuring-linters) requirements, and can be grouped by a key describing their utility in the `pyproject.toml` file.
 
 
 Configuring Linters
