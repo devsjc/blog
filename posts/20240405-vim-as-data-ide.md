@@ -27,7 +27,7 @@ This guide will use PostgreSQL as an example, but the principles and tools can b
 Vim Plugins
 ===========
 
-Handily, there already exists a set of high quality vim plugins providing much of the visual and interactive functionality you’d expect from a GUI database tool. The plugins are called [vim-dadbod](https://github.com/tpope/vim-dadbod) and [vim-dadbod-ui](https://github.com/kristijanhusak/vim-dadbod-ui), and can be installed with your favourite plugin manager. Alongside these, we’ll glean some extra useful functionality with another plugin:[vim-dispatch](https://github.com/tpope/vim-dispatch). We’ll come on to this one later.
+Handily, there already exists a set of high quality vim plugins providing much of the visual and interactive functionality you’d expect from a GUI database tool. The plugins are called [vim-dadbod](https://github.com/tpope/vim-dadbod) and [vim-dadbod-ui](https://github.com/kristijanhusak/vim-dadbod-ui), and can be installed with your favourite plugin manager. Alongside these, we’ll glean some extra useful functionality with another plugin: [vim-dispatch](https://github.com/tpope/vim-dispatch). We’ll come on to this one later.
 
 Assuming a setup as described in ["From Jetbrains to Vim"](https://medium.com/@devsjc/from-jetbrains-to-vim-a-modern-vim-configuration-and-plugin-set-d58472a7d53d), installation of the plugins means adding the following to your vimrc file:
 
