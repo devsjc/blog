@@ -5,9 +5,15 @@ description: "A guide to setting up a database IDE in Vim, with a focus on manag
 author: "devsjc"
 date: 5 April, 2024
 tags: [vim, ssh, sql]
+banner: "../assets/images/vadi/dbui.png"
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
 
-![](../assets/images/vadi/dbui.png)
+Like the colour scheme? See [vim-jb](https://github.com/devsjc/vim-jb)!
+
 
 Background
 ==========
@@ -130,9 +136,9 @@ The SSH tunnel commands described above are useful, but they require a terminal 
 
 The `vim-dispatch` plugin enables background running of jobs in Vim. This is useful for long-running tasks, such as SSH tunnels, as they can be run in the background without blocking the UI. It provides the vim command `:Start!` to run a command asynchronously, enabling the following, reasonably efficient, Vim database IDE workflow:
 
-    Launch Vim: `$ vim`
-    Asynchronously spin up a database connection, using the SSH config alias: `:Start ssh -N -v bastion`
-    Launch DBUI, which reads the connections defined earlier from the JSON file: `:DBUI`
+1. Launch Vim: `$ vim`
+2. Asynchronously spin up a database connection, using the SSH config alias: `:Start ssh -N -v bastion`
+3. Launch DBUI, which reads the connections defined earlier from the JSON file: `:DBUI`
 
 Now we are able to view the tables using the vim-dadbod-ui interface! No remembering connection strings or credentials, and no need to keep a terminal window open for the SSH tunnel.
 
