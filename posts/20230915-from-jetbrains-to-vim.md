@@ -5,9 +5,8 @@ description: "A walkthrough detailing a Vim setup aimed at emulating the most-us
 author: devsjc
 date: 15 September, 2023
 tags: [vim, vimrc, python]
+banner: "../assets/images/fjtv/vim-fzf.png"
 ---
-
-![](../assets/images/fjtv/vim-fzf.png)
 
 Short on time? Skip straight to the [configuration](#vim-configuration)!
 
