@@ -16,4 +16,8 @@ tasks:
     prompt: "Don't run this unless you've comitted your changes. Are you sure?"
     cmds:
       - find posts -type f ! -name "*.html" -delete
+  clean:
+    desc: "Delete compiled HTML files"
+    cmds:
+      - find posts -type f -name "*.html" -not -name "_index.html" -delete
 
