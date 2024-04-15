@@ -69,7 +69,7 @@ Vim configuration
 
 The configuration edits to Vim itself are fairly minimal. Here is the Vim-specific config section from the top of the `~/.vim/vimrc` file:
 
-```python
+```vim
  "=== VIM SETTINGS ===================================="
 
 unlet! skip_defaults_vim
@@ -93,21 +93,21 @@ Lets step through each section.
 
 First, the lines
 
-```python
+```vim
 unlet! skip_defaults_vim
 source $VIMRUNTIME/defaults.vim
 ```
 
 Prevents Vim from ignoring the defaults file, which it normally would do upon discovering a user's custom `vimrc`. The defaults file contains a bunch of handy settings, including the ever-present `set nocompatible`. Sourcing it basically saves several lines in the custom `vimrc`. Next, 
 
-```python
+```vim
 syntax on
 filetype plugin indent on
 ```
 
 enables Vim's inbuilt syntax highlighting, and the running of file-specific autocommands according to the file being edited. This means Vim knows e.g. what the comment char is for the current file, as well as the indentation rules, and will apply them accordingly as you code.
 
-```python
+```vim
 set hlsearch incsearch ignorecase
 set number relativenumber
 set encoding=UTF-8
@@ -116,7 +116,7 @@ set encoding=UTF-8
 The first line here improves Vim's `/` search function to incrementally highlight matches and ignore case differences. The second line adds a relative number row, preventing you from having to count to know what number to prepend your `l` and `h` movements with. It also displays the current absolute line number in the same row.
 Finally we enable the use of unicode with `set encoding=UTF-8`.
 
-```python
+```vim
 let mapleader="\<space>"
 nnoremap <leader>c :botright term<CR>
 ```
@@ -143,7 +143,7 @@ With Vim 8, native package management was included. By cloning the plugin direct
 
 Adding packages with Vim packager is as simple as adding
 
-```python
+```vim
 function! s:packager_init(packager) abort
     call a:packager.add('some/plugin')
 endfunction
@@ -165,7 +165,7 @@ FZF is a fast fuzzy search for vim, invaluable for navigating both inter- and in
 
 Add the packager calls into the relevant function, and then specify the additional config:
 
-```python
+```vim
 "In the packager function"
 call a:packager.add('junegunn/fzf', { 'do': './install --all && ln -s $(pwd) ~/.fzf'})
 call a:packager.add('junegunn/fzf.vim')
@@ -204,7 +204,7 @@ Plugin: [**yegappan/lsp**](https://github.com/yegappan/lsp)
 
 The first plugin we could point to to back up the "modern" adjective in the title, *lsp* is written in and for Vim9, the latest major version of Vim at time of writing. This plugin is going to be used to perform two of the four features mentioned above; *Auto Completion*, and *LSP Features* (such as *GoTo Definition*, *Rename*, *Find References*). We incorporate it as follows, again remembering to set the `call` line within the packager function at the top of the `vimrc`, and running `:source ~/.vim/vimrc` then `:PackagerInstall` to clone the plugin:
 
-```python
+```vim
 call a:packager.add('yegappan/lsp')
 
 "--- LSP settings ---------------------------------------------------"
@@ -245,7 +245,7 @@ nnoremap <leader>o :LspDocumentSymbol<CR>
 
 There's a lot going on here! Firstly lets look at 
 
-```python
+```vim
 let lspServers = [
     \ #{ name: 'gopls', filetype: ['go', 'gomod'],  path: 'gopls', args: ['serve'] },
     \ #{ name: 'pylsp', filetype: ['py', 'python'], path: 'pylsp', args: []        },
@@ -256,7 +256,7 @@ From our discussion on the Language Server Protocol in the background section, y
 
 Note that this plugin does not install the servers, you have to do that manually.
 
-```python
+```vim
 "Enable auto selection of the fist autocomplete item"
 augroup LspSetup
     au!
@@ -268,7 +268,7 @@ inoremap <expr> <CR> pumvisible() ? "\<C-Y>" : "\<CR>"
 
 These lines are described with comments; they basically make the autocompletion menu behave more like the one we are used to in JetBrains IDEs: allowing for item selection with `<CR>` and always highlighting the first completion option.
 
-```python
+```vim
 let lspOptions = #{
     \ aleSupport: v:true,
     \ autoHighlight: v:true,
@@ -284,7 +284,7 @@ autocmd VimEnter * call LspOptionsSet(lspOptions)
 
 These lines describe the plugin-specific configuration, documentation for which can be found in [the plugin's doc/lsp.txt](https://github.com/yegappan/lsp/blob/main/doc/lsp.txt) file, accessible in vim with `:h lsp-options`. These again are to preference, but the most important one here is the first one: `aleSupport: v:true`. This allows us to pass off the *linting* side of things to a dedicated plugin, in order to keep logical separation of functions and ensure we are using the best tools for each task. That plugin is called ALE, and we'll look at it in a second.
 
-```python
+```vim
 "Mappings for most-used functions"
 nnoremap <leader>i :LspHover<CR>
 nnoremap <leader>d :LspGotoDefinition<CR>
@@ -307,7 +307,7 @@ This plugin carries out the *Linting* and *Fixing* actions mentioned in the back
 
 Whilst ALE also purports to bundle LSP features, we elect to ignore those in favour of our standalone LSP plugin above. Again, our configuration specifies examples for Python and Go, but again, much more info can be found in the [ALE documentation](https://github.com/dense-analysis/ale/blob/master/doc/ale.txt).
 
-```python
+```vim
 call a:packager.add('dense-analysis/ale')
 
 "--- ALE settings ------------------------------------------------------"
@@ -358,7 +358,7 @@ I won't discuss much of the rest of the config here, as it should be increasingl
 
 One thing I will mention is the mapping: whilst linting is occurring and reoccurring regularly on document changes, fixing only occurs on a manual step, and I shall explain why in the next plugin section. Akin to the JetBrains' `CMD-Option-Shift-L` for code reformatting, here we specify the more memorable `<leader>l` key combination to fix and format code:
 
-```python
+```vim
 nnoremap <leader>L :ALEFix<CR>
 ```
 
@@ -369,7 +369,7 @@ Plugin: [**907th/vim-auto-save**](https://github.com/907th/vim-auto-save)
 
 One thing that constantly throws me when moving from a JetBrains IDE to e.g. VSCode is the lack of auto-saving. Let's save ourselves that same whiplash in Vim via this plugin:
 
-```python
+```vim
 call a:packager.add('907th/vim-auto-save')
 
 "--- AutoSave settings ---------------------------------------------"
@@ -389,7 +389,7 @@ Plugin: [**jiangmiao/auto-pairs**](https://github.com/jiangmiao/auto-pairs)
 
 You'd be surprised at quite how much weight this plugin pulls into making Vim feel like a responsive, modern IDE - and better still, we don't need to configure this one to get a familiar experience. Just import it like all the others with
 
-```python
+```vim
 call a:packager.add("jiangmiao/auto-pairs")
 ```
 
@@ -402,7 +402,7 @@ Plugin: [**airblade/vim-gitgutter**](https://github.com/airblade/vim-gitgutter)
 
 Often whilst using a JetBrains IDE, I'll realise I changed something since the last commit that I didn't want to change, and I'll click on the little git indicator in the gutter in order to revert it. This can be done in Vim too with the `vim-gitgutter` plugin. Again, this one needs no configuration:
 
-```python
+```vim
 call a:packager.add("airblade/vim-gitgutter")
 ```
 
@@ -413,7 +413,7 @@ Plugin: [**bluz71/vim-mistfly-statusline**](https://github.com/bluz71/vim-mistfl
 
 There are many statusline plugins to be had for Vim, but after trying a few, I've settled on Mistfly statusline. It's lightweight, opinionated, and written in vimscript. Although many people will say statuslines are unnecessary, I find they play a large part in reducing cognitive load and increase the ease with which I can use Vim. Mistfly integrates with ALE and GitGutter to show you at a glance what git branch you are currently working on, as well as the number of errors, warnings, and info diagnostics associated with the current file. It also shows you the name of the file you're editing (along with an icon if you install [vim-devicons](https://github.com/ryanoasis/vim-devicons)) and the line and column number defining the cursor's current position. We will configure this one ever so slightly:
 
-```python
+```vim
 call a:packager.add('bluz71/vim-mistfly-statusline')
 
 "--- Mistfly statusline settings ------------------------------------------"
@@ -428,7 +428,7 @@ Plugin: [**vim-test/vim-test**](https://github.com/vim-test/vim-test])
 
 Another one of the miscellaneous features mentioned in the background section - integrated running of unit tests. We achieve this with the vim-test plugin, in conjunction with the [tpope/vim-dispatch](https://github.com/tpope/vim-dispatch) plugin for asynchronous running:
 
-```python
+```vim
 call a:packager.add('janko-m/vim-test', {'requires': 'tpope/vim-dispatch'})
 
 "--- Vim Test settings -----------------------------------------------"
@@ -449,7 +449,7 @@ Colorscheme
 
 This is one that's entirely personal preference. Take a look on [Vim Colour Schemes](https://vimcolorschemes.com/) and see if any call to you. After trying a few I have settled on [sonokai](https://github.com/sainnhe/sonokai):
 
-```python
+```vim
 call a:packager.add('sainnhe/sonokai')
 
 colorscheme sonokai
@@ -471,7 +471,7 @@ Plugin: [**lambdalisue/fern.vim**](https://github.com/lambdalisue/fern.vim])
 
 Another bonus, because Vim has a perfectly serviceable file tree already in **netrw**. If you search online, many Vim users urge new Vim users to fight the urge to immediately install file tree plugins such as [preservim/nerdtree](https://github.com/preservim/nerdtree) for this reason. It's true, if you get quick and comfortable with FZF then you will find those times you require a tree to come with increasing rareness. However, when working on a big project, or a new project, filetrees are helpful to begin with to gain an understanding of the layout of the project. So it's up to you - if you feel you're able to survive with `netrw` alone, skip this; but if you want the familiarity of a file tree to fall back on, then add the following to your `vimrc`:
 
-```python
+```vim
 call a:packager.add('lambdalisue/fern.vim', {'requires': [
       \ 'lambdalisue/fern-git-status.vim',
       \ 'lambdalisue/fern-renderer-devicons.vim',
@@ -496,7 +496,7 @@ Plugin: [**liuchengxu/vim-which-key**](https://github.com/liuchengxu/vim-which-k
 
 We've made a fair few custom keybinds for our leader key in this config, so how do we go about remembering them all? With a bit of luck, you've followed my advice and incrementally added in each plugin until you feel confident remembering their mappings, but in case a refresher is ever needed, we can use the *Which Key* plugin to jog our memory:
 
-```python
+```vim
 call a:packager.add('liuchengxu/vim-which-key')
 
 "--- WhichKey settings ---------------------------------------------"

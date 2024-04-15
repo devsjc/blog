@@ -25,6 +25,11 @@
     <p style="font-size:90%;">Posted on <time datetime="{{ page.date | date(format="%+") }}">{{ page.date | date(format="%B %d, %Y") }}</time></p>
   {% endif %}
   <br />
+
+  {% if page.banner %}
+    resize_image(path=page.banner, op="fit-width")
+  {% endif %}
+
   <hr />
 
   {{ page.content | safe }}
