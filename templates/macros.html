@@ -5,3 +5,28 @@
 </li>
 {% endmacro post_in_list %}
 
+{% macro archive() %}
+<div class="archive">
+  <h2>archive</h2>
+  {% for year, posts in section.pages | group_by(attribute="year") %}
+  <p><em>{{ year }}</em></p>
+    <ul class="post-list">                
+      {% for post in posts %}
+        {{ macros::post_in_list(post=post) }}
+      {% endfor %}
+    </ul>
+  {% endfor %}          
+</div>
+{% endmacro archive %}
+
+{% macro latest() %}
+<div class="latest">
+  <h2>latest</h2>
+  <ul class="post-list">
+    {% for post in section.pages | slice(start=0, end=5) %}
+      {{ macros::post_in_list(post=post) }}
+    {% endfor %}
+  </ul>
+</div>
+{% endmacro latest %}
+

@@ -49,20 +49,17 @@
 
       {% block header %}
       <header role="banner">
-        <h3 style="margin-top:0;">
-          <a href="{{ config.base_url | safe }}" title="Home">{{ config.title }}</a>
-          <br /><small>{{ config.description }}</small>
-        </h3>
+        <h1 id="logo"><a href="{{ config.base_url | safe}}" title="Home">
+            <img src="devsjc.png" alt="logo" style="width: 30px; height: 30px; border-radius: 30px; vertical-align: center;"/>
+          </a>{{ config.title }}</h1>
+        <p>{{ config.description }}</p>
       </header>
       <hr />
       {% endblock header %}
 
       {% block content %}
-      <ul class="homepage-list">
-        {% for post in section.pages %}
-          {{ macros::post_in_list(post=post) }}
-        {% endfor %}
-      </ul>
+      {{ macros::latest() }}
+      {{ macros::archive() }}
       {% endblock content %}
 
       {% block footer %}
@@ -78,15 +75,20 @@
           {% endfor %}
         </nav>
         {% endif %}
-        {% block taglines %}
-        <small>
-          {%- if config.extra.zola or config.extra.zola is undefined -%}Built with <a href="https://www.getzola.org/">Zola</a>{%- endif -%}
-          {%- if config.extra.netlify %} & hosted on <a href="https://netlify.com">Netlify</a>{%- endif -%}
-          {%- if config.extra.zola or config.extra.zola is undefined -%}.<br />{%- endif %}
-          {% if config.extra.maintained_with_love or config.extra.maintained_with_love is undefined%}Maintained with &hearts; for the web.<br />{% endif %}
-          {% if config.extra.footer_tagline %}{{ config.extra.footer_tagline }}{% endif %}
-        </small>
-        {% endblock taglines %}
+
+        {% if config.extra.social_links %}
+        <div id="social-links" style="text-align:right;"><small>
+            <span>follow {{config.title}} </span>
+            {% for item in config.extra.social_links %}
+            {% if item.emoji %}{{ item.emoji }} on {% endif %}</span>
+              <a href="{{ item.url | safe }}">{{ item.name }}</a>
+              {% if loop.last %}{% else %}
+                <span>&middot;</span>
+              {% endif %}
+            {% endfor %}
+        </small></div>
+        {% endif %}
+
       </footer>
       {% endblock footer %}
 
