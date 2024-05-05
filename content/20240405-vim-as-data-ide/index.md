@@ -7,7 +7,7 @@ date: "2024-04-05"
 tags: [vim, ssh, sql]
 ---
 
-![](images/dbui.png)
+![](./images/dbui.png)
 
 Like the colour scheme? See [vim-jb](https://github.com/devsjc/vim-jb)!
 
