@@ -2,21 +2,18 @@
 title: "Database Connections in the Terminal"
 subtitle: "Leveraging SSH and Vim to inspect remote databases"
 description: "A guide to setting up a database IDE in Vim, with a focus on managing SSH tunnels."
-author: "devsjc"
-date: 5 April, 2024
+author: devsjc
+date: "2024-04-05"
 tags: [vim, ssh, sql]
-banner: "../assets/images/vadi/dbui.png"
-output:
-  html_document:
-    toc: true
-    toc_float: true
 ---
+
+![](images/dbui.png)
 
 Like the colour scheme? See [vim-jb](https://github.com/devsjc/vim-jb)!
 
 
-Background
-==========
+Background: What's the Aim?
+===========================
 
 As a developer, you’ll inevitably find yourself having to interact with databases. There are GUI tools available ([DataGrip](https://www.jetbrains.com/datagrip/), [DBeaver](https://dbeaver.io/)), but in the spirit of [my previous article](https://medium.com/@devsjc/from-jetbrains-to-vim-a-modern-vim-configuration-and-plugin-set-d58472a7d53d) I wanted to see if I could find a frictionless setup that allowed me to stay in the terminal, and even better, in Vim.
 
@@ -76,7 +73,7 @@ Remote databases can’t necessarily be accessed directly, as they are often hos
 
 For instance, consider a Raspberry Pi hosting a PostgreSQL database on a local network. The Pi has an IP address `192.168.0.5`, and a PostgreSQL instance is installed and running on the default port `5432`. To connect to this database from your local machine, you can set up an SSH tunnel with the following command:
 
-```sh
+```bash
 $ ssh -i ~/.ssh/id_pi -N -L 5433:localhost:5432 piuser@192.168.0.5
 ```
 
@@ -90,7 +87,7 @@ A common pattern for cloud databases is to host them in a private network, and u
 
 For instance, consider some data store in a private network with endpoint` my-datastore.region.datastore.provider.com` and port `5432`. The private network has an externally-accessible bastion instance with address `a.b.c.d.bastionhost.com` and user `username`. Tunnelling a port from your machine to the datastore’s port through the bastion host can be done with a command such as:
 
-```sh
+```bash
 $ ssh -i ~/.ssh/id_bastion -N -L 5000:my-datastore.region.datastore.provider.com:5432 username@a.b.c.d.bastionhost.com
 ```
 
@@ -106,7 +103,7 @@ Host bastion
 
 The LocalForward directive specifies any port forwarding that should be done when connecting to the host. Now, connecting to the bastion host and forwarding the port can be done with a simple command:
 
-```sh
+```bash
 $ ssh -N bastion
 ```
 
@@ -134,10 +131,10 @@ Background Tunnels: Vim Dispatch
 
 The SSH tunnel commands described above are useful, but they require a terminal window to be open and the command to be running at all times - not very streamlined. Ideally, the creation and destruction of any required SSH tunnels should be handled on database connection in the UI. This isn’t something I’ve been able to find a solution for yet, but it seems there is [half an eye on it for the roadmap of the `vim-dadbod-ui` plugin](https://github.com/kristijanhusak/vim-dadbod-ui/issues/202). In the meantime, we can leverage the vim-dispatch plugin installed earlier.
 
-The `vim-dispatch` plugin enables background running of jobs in Vim. This is useful for long-running tasks, such as SSH tunnels, as they can be run in the background without blocking the UI. It provides the vim command `:Dispatch!` to run a command asynchronously, enabling the following, reasonably efficient, Vim database IDE workflow:
+The `vim-dispatch` plugin enables background running of jobs in Vim. This is useful for long-running tasks, such as SSH tunnels, as they can be run in the background without blocking the UI. It provides the vim command `:Start!` to run a command asynchronously, enabling the following, reasonably efficient, Vim database IDE workflow:
 
 1. Launch Vim: `$ vim`
-2. Asynchronously spin up a database connection, using the SSH config alias: `:Dispatch! ssh -N -v bastion`
+2. Asynchronously spin up a database connection, using the SSH config alias: `:Start ssh -N -v bastion`
 3. Launch DBUI, which reads the connections defined earlier from the JSON file: `:DBUI`
 
 Now we are able to view the tables using the vim-dadbod-ui interface! No remembering connection strings or credentials, and no need to keep a terminal window open for the SSH tunnel.

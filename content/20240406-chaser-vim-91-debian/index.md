@@ -2,7 +2,7 @@
 title: "chaser // how to install Vim 9.1 on Debian Bookworm"
 subtitle: "(Or any package from debian testing)"
 author: "devsjc"
-date: "6 April, 2024"
+date: "2024-04-06"
 tags: [vim, debian]
 ---
 
@@ -17,7 +17,7 @@ deb-src http://deb.debian.org/debian/ testing main
 
 Now, running `sudo apt update` will add the new list to your sources:
 
-```shell
+```bash
 $ sudo apt update
 Hit:1 http://security.debian.org/debian-security bookworm-security InRelease
 Hit:2 http://deb.debian.org/debian bookworm InRelease
@@ -40,7 +40,7 @@ Pin-Priority: -2
 
 By specifying the priority to negative, `apt` will never choose candidates from this release when running commands unless explicitly requested - so now a `sudo apt update` shows the following:
 
-```shell
+```bash
 $ sudo apt update
 Hit:1 http://deb.debian.org/debian bookworm InRelease
 Hit:2 http://security.debian.org/debian-security bookworm-security InRelease
@@ -55,13 +55,13 @@ All packages are up to date.
 
 In this manner, testing has been added safely as a source! Finally, to install Vim 9.1, we can now run
 
-```shell
+```bash
 $ apt install vim/testing
 ```
 
 Since Vim has dependencies only on a couple of its own packages, we aren't going to be adversely affecting any core libraries with this upgrade. Check the new version is correctly installed:
 
-```shell
+```bash
 $ vim --version | head -n 2
 VIM - Vi IMproved 9.1 (2024 Jan 02, compiled Jan 11 2024 20:38:16)
 Included patches: 1-16

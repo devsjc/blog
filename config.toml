@@ -1,0 +1,31 @@
+title = "devsjc blogs //"
+description = "You've found it. The blog of devsjc. But will you find anything of any use?"
+base_url = "https://devsjc.github.io/blog"
+
+# Whether to automatically compile all Sass files in the sass directory
+compile_sass = true
+
+# Whether to build a search index to be used later on by a JavaScript library
+build_search_index = false
+
+# When set to "true", emoji aliases translated to their corresponding
+# Unicode emoji equivalent in the rendered Markdown files. (e.g.: :smile: => 😄)
+render_emoji = true
+
+# Whether to generate RSS feed
+generate_feed = true
+
+[markdown]
+highlight_code = true
+highlight_theme = "nord"
+
+[extra]
+footer_links = [
+    {url = "$BASE_URL/", name = "Home"},
+    {url = "$BASE_URL/atom.xml", name = "RSS"},
+]
+social_links = [
+    {url = "https://medium.com/@devsjc", name = "Medium", emoji = "⭐"},
+    {url = "https://github.com/devsjc/blog", name = "GiHub", emoji = "👏"},
+    {url = "$BASE_URL/atom.xml", name = "RSS", emoji = "📡"},
+]
