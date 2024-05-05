@@ -1,8 +1,5 @@
-# Title and description of the site
 title = "devsjc blogs //"
 description = "You've found it. The blog of devsjc. But will you find anything of any use?"
-
-# The URL the site will be built for
 base_url = "https://devsjc.github.io/blog"
 
 # Whether to automatically compile all Sass files in the sass directory
@@ -15,19 +12,20 @@ build_search_index = false
 # Unicode emoji equivalent in the rendered Markdown files. (e.g.: :smile: => 😄)
 render_emoji = true
 
+# Whether to generate RSS feed
+generate_feed = true
+
 [markdown]
-# Whether to do syntax highlighting
-# Theme can be customised by setting the `highlight_theme` variable to a theme supported by Zola
 highlight_code = true
 highlight_theme = "nord"
 
 [extra]
-# Put all your custom variables here
-
 footer_links = [
     {url = "$BASE_URL/", name = "Home"},
+    {url = "$BASE_URL/atom.xml", name = "RSS"},
 ]
 social_links = [
     {url = "https://medium.com/@devsjc", name = "Medium", emoji = "⭐"},
     {url = "https://github.com/devsjc/blog", name = "GiHub", emoji = "👏"},
+    {url = "$BASE_URL/atom.xml", name = "RSS", emoji = "📡"},
 ]

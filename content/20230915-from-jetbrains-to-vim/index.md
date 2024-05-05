@@ -5,8 +5,9 @@ description: "A walkthrough detailing a Vim setup aimed at emulating the most-us
 author: devsjc
 date: "2023-09-23"
 tags: [vim, vimrc, python]
-banner: "images/vim-fzf.png"
 ---
+
+![](images/vim-fzf.png)
 
 Short on time? Skip straight to the [configuration](#vim-configuration)!
 

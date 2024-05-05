@@ -2,21 +2,18 @@
 title: "Database Connections in the Terminal"
 subtitle: "Leveraging SSH and Vim to inspect remote databases"
 description: "A guide to setting up a database IDE in Vim, with a focus on managing SSH tunnels."
-author: "devsjc"
+author: devsjc
 date: "2024-04-05"
 tags: [vim, ssh, sql]
-banner: "images/dbui.png"
-output:
-  html_document:
-    toc: true
-    toc_float: true
 ---
+
+![](images/dbui.png)
 
 Like the colour scheme? See [vim-jb](https://github.com/devsjc/vim-jb)!
 
 
-Background
-==========
+Background: What's the Aim?
+===========================
 
 As a developer, you’ll inevitably find yourself having to interact with databases. There are GUI tools available ([DataGrip](https://www.jetbrains.com/datagrip/), [DBeaver](https://dbeaver.io/)), but in the spirit of [my previous article](https://medium.com/@devsjc/from-jetbrains-to-vim-a-modern-vim-configuration-and-plugin-set-d58472a7d53d) I wanted to see if I could find a frictionless setup that allowed me to stay in the terminal, and even better, in Vim.
 
