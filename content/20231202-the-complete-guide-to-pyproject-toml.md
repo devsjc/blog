@@ -330,6 +330,64 @@ This builds a wheel in the newly-created `dist/` directory at the root of the co
 Multi-stage Dockerfiles
 =======================
 
+One thing that I struggled with after adopting `pyproject.toml` was my usual multi-stage Containerfile workflow. With a `requirements.txt` file, building a small container with just the runtime dependencies was a fairly straightforward process: install the requirements into a virtual environment in a build stage, copy the virtual environment into an app stage, copy the code into the app stage, set the entrypoint, and you're away. The benefit of splitting out the layers in this manner is that the build stage only has to run when `requirements.txt` changes, reducing subsequent build times for code-only changes. With `pyproject`, it is a little hard to get this separation of layers, but still possible, with a Dockerfile like the following:
+
+```dockerfile
+# Dockerfile
+
+# Create a virtual environment and install dependencies
+# * Only re-execute this step when pyproject.toml changes
+# * Don't build a binary for the cool-python-project package
+FROM python-3.12 AS build-reqs
+WORKDIR /app
+COPY pyproject.toml pyproject.toml
+RUN python -m venv /venv
+RUN /venv/bin/pip install -q . --no-binary=cool-python-project
+
+# Build binary for the package and install code
+# * The README.md is required for the long description
+FROM build-reqs AS build-app
+COPY src src
+COPY README.md README.md
+RUN /venv/bin/pip install .
+
+# Copy the virtualenv into a distroless image
+# * These are small images that only contain the runtime dependencies
+FROM gcr.io/distroless/python3-debian11
+WORKDIR /app
+COPY --from=build-app /venv /venv
+ENTRYPOINT ["/venv/bin/coolprojectcli"]
+```
+
+There's a few nuances in here.
+
+1. `RUN /venv/bin/pip install -q . --no-binary=cool-python-project`: Since we have specified a script with an entrypoint to the program at `my_package.main:main`, but we have not passed the codebase to this stage of the Dockerfile, pip will complain trying to install our project - unless we specify `--no-binary`. Also note that we only install the core dependencies in order to keep our virtual environment as small as possible. Here `cool-python-project` must match the `name` we specified in our `[project]` section.
+2. `RUN /venv/bin/pip install .`: Since we didn't build the scripts for our library earlier, we must do so now with another call to `pip install` after copying over the source code.
+3. `FROM gcr.io/distroless/python3-debian11`: In order to improve the security and reduce the size of our final container[[28]](https://github.com/GoogleContainerTools/distroless), we use a distroless image, just including the runtime dependencies by copying the virtual environment from the `build-app` stage.
+4. `ENTRYPOINT ["/venv/bin/coolprojectcli"]`: We leverage the script we specified [earlier](#entrypoints) to make the Dockerfile act akin to the instantiation of the script itself. In this manner, whatever we tag the built image as can be used as a stand-in for the `coolprojectcli` binary.
+
+
+For example, we can now build and tag the container using
+
+```bash
+$ docker build . -t coolprojectdocker:local
+```
+
+And (as mentioned above) since the entrypoint of the Dockerfile is the script we specified, running the built image works akin to the script; no extra commands required:
+
+```bash
+$ docker run coolprojectdocker:local -h
+usage: coolprojectcli [-h] echo
+
+positional arguments:
+  echo        String to print back to the console
+
+options:
+  -h, --help  show this help message and exit
+```
+
+> Note: the `--no-binary` technically still builds the package and the scripts. If I'm honest, I'm not sure why it prevents complaints about missing source files! If someone knows of a better Dockerfile structure that makes more logical sense whilst achieving the same result, I'd be interested to hear it - and I'll include any updates here as I discover them. Maybe one day there'll be a PEP specifying some fabled `--only-dependencies` flag to pip install...
+
 
 Bonus: Efficient GitHub Actions usage
 =====================================
