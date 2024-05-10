@@ -149,6 +149,9 @@ Phew! We've entirely replaced `requirements.txt` and some, enabling extra useful
 Configuring Linters
 ===================
 
+The next piece of functionality we'll glean from `pyproject.toml` is that provided by many tool-specific config, dot, and ini files - linting (and formatting, and fixing!). Using `pyproject.toml`, we'll remove the need for `mypy.ini`, `tox.ini`, and `.isort.cfg`, further reducing the file-soup in the root of our repository.
+
+
 Ruff
 ----
 
