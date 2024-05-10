@@ -326,6 +326,8 @@ $ python -m build --wheel
 
 This builds a wheel in the newly-created `dist/` directory at the root of the codebase (make sure it's in your `.gitignore`!), which can then be uploaded to PyPi using `twine` - however it's more likely you'll want to do this as part of a CI process. We'll come on to that after the next section.
 
+Next, lets move away from why and how we should use a `pyproject.toml` file, and instead see it in action in scenarios you will be familiar with from across the development lifecycle: CI/CD and Containerisation. This article will now act less as a tutorialized resource and more as a solutions reference, describing how to achieve certain goals with the new `pyproject.toml` setup.
+
 
 Multi-stage Dockerfiles
 =======================
@@ -392,8 +394,131 @@ options:
 Bonus: Efficient GitHub Actions usage
 =====================================
 
+Yes, there are other CI tools - but as with our selection of build frontends and backends, it's most likely that you are personally using GitHub Actions[[29]](https://www.jetbrains.com/lp/devecosystem-2023/team-tools/#ci_tools), so we'll focus on that here. Imagine the scenario where, even with a keen eye on external dependency sizes and namespacing them to optional subsets, our CI pipeline is repeatedly eating up several minutes of developer time building the virtual environment for the application. Is there a way to speed this up? Well, yes, and much like with the Dockerfile above it incorporates a similar separation of concerns to allow for the leveraging of a cache.
+
+Consider two jobs, one to run tests and one to build and publish the wheel to PyPi. Currently, both steps build the virtual environment from scratch:
+
+```yaml
+name: Python CI
+on: ["push"]
+
+jobs:
+  test-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install requirements
+        run: pip install .[test]
+      - name: Run tests
+        run: pytest .
+
+  publish-wheel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install requirements
+        run: pip install .
+      - name: Build wheel
+        run: python -m pip wheel . --wheel-dir dist
+      - name: Publish wheel
+        uses: pypa/gh-action-pypi-publish@v1.8.10
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+```
+
+Clearly, there's some inefficiencies here. Both jobs install similar sets of dependencies, duplicating work and doubling wait times. Also, this is running on every CI invocation, regardless of whether the dependencies of the project have actually changed or not! Lets address these issues by including a new job, `build-venv`, who's job is solely to construct and cache the virtual environment. It will only do so if the `pyproject.toml` file has changed, otherwise it should opt to use the previously cached version of the virtual environment. Subsequent jobs can then use this cached environment instead of building their own from scratch.
+
+```yaml
+name: Python CI
+on: ["push"]
+
+jobs:
+  build-venv:
+    runs-on: ubunut-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      # Restore cached virtualenv, if available
+      # * The pyproject.toml hash is part of the cache key, invalidating
+      #   the cache if the file changes
+      - name: Restore cached virtualenv
+        id: restore-cache
+        uses: actions/cache/restore@v3
+        with:
+          path: ./venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/pyproject.toml') }}
+      # If a previous cache wasn't restored (pyproject has changed), build the venv
+      # * Make the venv at `./venv` to ensure compatibility with runners
+      - name: Build venv
+        run: |
+          python -m venv ./venv
+          ./venv/bin/python -m pip install .[test]
+        if: steps.restore-cache.outputs.cache-hit != 'true'
+      # Cache the built virtualenv for future runs
+      - name: Cache virtualenv
+        uses: actions/cache/save@v3
+        with:
+          path: ./venv
+          key: ${{ steps.restore-cache.outputs.cache-primary-key }}
+        if: steps.restore-cache.outputs.cache-hit != 'true'
+```
+
+Now, the `test-unit` and `publish-wheel` jobs can use this environment, restoring from the cache:
+
+```
+jobs:
+  build-venv: ...
+
+  test-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Restore cached virtualenv
+        uses: actions/cache/restore@v3
+        with:
+          path: ./venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/pyproject.toml') }}
+      - name: Install package
+        run: ./venv/bin/python -m pip install .
+      - name: Run tests
+        run: pytest .
+
+  publish-wheel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Restore cached virtualenv
+        uses: actions/cache/restore@v3
+        with:
+          path: ./venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/pyproject.toml') }}
+      - name: Build wheel
+        run: ./venv/bin/python -m pip wheel . --wheel-dir dist
+      - name: Publish wheel
+        uses: pypa/gh-action-pypi-publish@v1.8.10
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+```
+
+I know what you're thinking: *We're still running pip install in the test-unit job! What gives?* Good spot, it's true - and in fact it's completely necessary. Running pip install at this point, after restoring the cached virtual environment, will take no time at all, as all the dependencies are already installed. `pip` will see this, and promptly skip reinstallation, so we don't lose any time here. But we have to install the package here as, whilst the dependencies and so the virtual environment might not have changed here, the source code almost certainly will have. As such, running `pip install` again here ensures we are using an up to date version of the repository in our testing.
+
+I know what else you're thinking: *Why did we bother to separate dependencies out if we're going to build the wheel using a virtual environment with the test dependencies installed?* Another good spot! We did install the test requirements into the cached virtual environment. It's okay to do this because `pip wheel` will only look for what is specified in the `dependencies` section to include as dependencies of the wheel. Our wheel stays no bigger than the size it needs to be!
+
+And I know what else else you're thinking: *What other useful things can I do with this pyproject file? I've learned so much I don't want to stop!* Well, handily for you, we're not quite done here. Lets learn about two more bonus tips and tricks to do with our `pyproject.toml` file: [automatic versioning](#bonus-automatic-versioning), and [automatic documentation](#bonus-automatic-documentation). 
+
 Bonus: Automatic Versioning
 ===========================
 
+Coming soon!
+
 Bonus: Automatic Documentation
 ==============================
+
+
+Coming soon!
