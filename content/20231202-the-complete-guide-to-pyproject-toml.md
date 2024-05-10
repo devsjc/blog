@@ -17,7 +17,7 @@ Let's get the elephant in the room out of the way first, because I know what som
 So what is wrong with the current way of packaging python projects that might warrant a switch to pyproject-based management? Consider the following not-too-far-fetched pattern for the root of a python repo:
 
 ```
-cool-python-service
+cool-python-project
 ├── requirements.txt
 ├── requirements-dev.txt
 ├── setup.py
@@ -222,7 +222,81 @@ Alright! Our development environment is in great shape! Anyone trying to work on
 Packaging for Distribution
 ==========================
 
-If your project is intended as use as an installable library, or a command line tool, chances are you're going to want to publish a distribution of it to PyPi. Building an `sdist` or `wheel` requires the use of a build backend, as mentioned in the [Background](#background-why-do-we-need-pyproject). Here, we'll use setuptools. 
+If your project is intended as use as an installable library, or a command line tool, chances are you're going to want to publish a distribution of it to PyPi. Building an `sdist` or `wheel` requires the use of a build backend, as mentioned in the [Background](#background-why-do-we-need-pyproject). Here, we'll use `setuptools`. The desire to use setuptools as our build backend must be specified in a `[build-system]` section of the `pyproject.toml`:
+
+```toml
+[build-system]
+requires = ["setuptools==69"]
+build-backend = "setuptools.build_meta"
+```
+
+Now, running our `pip install` commands from before also installs the build system packages. Not very exciting! So what can we do with this now we have it available?
+
+Entrypoints
+-----------
+
+We now need to make some assumptions about the layout of our project. Lets say we were paying attention in the [editable installations](#editable-and-normal-installations) section, and have laid out our codebase using the `src` structure similar to the following:
+
+```
+cool-python-project
+├── pyproject.toml
+└── src
+    └── my_package
+        └── main.py
+```
+
+Lets also assume that our `main.py` contains within it a function, `main`, that acts as the entrypoint to a command-line interface for the project:
+
+```python
+"""main.py"""
+
+import argparse
+
+parser = argparse.ArgumentParser(prog="coolprojectcli")
+parser.add_argument("echo", help="String to print back to the console")
+
+def main():
+    args = parser.parse_args()
+    print(args.echo)
+```
+
+We might be tempted to run this with something like `python src/my_package/main.py`, but we can do better. Lets use our `pyproject.toml` file to define scripts that run specified entrypoints of our package[[23]](https://setuptools.pypa.io/en/latest/userguide/quickstart.html#entry-points-and-automatic-script-creation):
+
+```toml
+[project.scripts]
+coolprojectcli = "my_package.main:main"
+```
+
+Now when we run our editable install as before, setuptools will create a script called `coolprojectcli` in our virtual environment's `bin` folder that runs the `main` function in the `main.py` module in the package `my_package`. Furthermore, because we performed an editable install, the codebase is still the source of truth for this script, so modifications to `main` will be reflected when running the script. Now we can use our package from the command line with a nice command:
+
+```bash
+$ coolprojectcli -h
+usage: coolprojectcli [-h] echo
+
+positional arguments:
+  echo        String to print back to the console
+
+options:
+  -h, --help  show this help message and exit
+```
+
+This better reflects how an end user might interact with the package, and again simplifies things for new developers working with the codebase. The `README.md` file can now specify both a straightforward installation command and a simple starting point for getting to grips with the program.
+
+```markdown
+# README.md
+
+## Development
+
+Install the development dependencies and program scripts via `pip install -e .[dev]`.
+The cli is then accessible through the command `coolprojectcli`.
+```
+
+Metadata
+--------
+
+Speaking of the `README.md`, it would be useful if people viewing the package on PyPi could be privvy to the same information.
+
+
 TODO - talk about entrypoints, metadata, versioning
 
 
