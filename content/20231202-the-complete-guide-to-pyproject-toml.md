@@ -9,7 +9,7 @@ tags: [pyproject, python, packaging]
 
 *Just looking for a `pyproject.toml` to copy to your new project? See the [accompanying gist](https://gist.github.com/devsjc/86b896611d780e3e3c937b9c48682f31)!*
 
-Background: Why use pyproject at all?
+Background: Why do we need pyproject?
 =====================================
 
 Let's get the elephant in the room out of the way first, because I know what some of you are thinking: Isn't pyproject.toml the [poetry](https://python-poetry.org/) configuration file? Well, yes it is, but you might not know that it's actually a general python project configuration file that works with many build frontends and backends[[1]](https://packaging.python.org/en/latest/tutorials/packaging-projects/#choosing-a-build-backend), poetry being one such frontend example. So this blog won't be talking about poetry at all. In fact, in favour of creating the most ubiquitous, understandable, and portable python project setup possible, I'll be explaining how to use pyproject with the most widely used build frontend - `pip` - and backend - `setuptools`[[2]](https://drive.google.com/file/d/1U5d5SiXLVkzDpS0i1dJIA4Hu5Qg704T9/view).
@@ -149,7 +149,10 @@ Phew! We've entirely replaced `requirements.txt` and some, enabling extra useful
 Configuring Linters
 ===================
 
-There are many linting and fixing tools available for python (Flake8[[10]](https://flake8.pycqa.org/en/latest/index.html), isort[[11]](https://pycqa.github.io/isort/), Black[[12]](https://black.readthedocs.io/en/stable/) to name a few), all of which would often be configured in `setup.cfg`, `tox.ini`, or other tool-specific dotfiles. Even before we consolidate configuration to our `pyproject,toml` file, lets go one further and consolidate these tools into one first - `ruff`[[13]](https://github.com/astral-sh/ruff). If you've already heard of it, great! I hope you're using it already. If you haven't or aren't, now is a great time to start - it's quick[[13]](https://astral.sh/blog/the-ruff-formatter), it's fast[[14]](https://docs.astral.sh/ruff/#testimonials), and it's got pace[[14]](https://www.youtube.com/watch?v=AfQarImZ97Y&t=228s). It also bundles all three tools mentioned above, integrates well with IDEs, and of course, is configurable using `pyproject.toml`. Lets add a section for it, using some example values (but by no means the final word on how to configure ruff! It depends on your own or your organisations' preferences).
+Ruff
+----
+
+There are many linting and fixing tools available for python (`Flake8`, `isort`, `Black` to name a few), all of which would often be configured in `setup.cfg`, `tox.ini`, or other tool-specific dotfiles. Even before we consolidate configuration to our `pyproject,toml` file, lets go one further and consolidate these tools into one first - `ruff`. If you've already heard of it, great! I hope you're using it already. If you haven't or aren't, now is a great time to start - it's quick[[10]](https://astral.sh/blog/the-ruff-formatter), it's fast[[11]](https://docs.astral.sh/ruff/#testimonials), and it's got pace[[12]](https://www.youtube.com/watch?v=AfQarImZ97Y&t=228s). It also bundles all three tools mentioned above, integrates well with IDEs, and of course, is configurable using `pyproject.toml`. Lets add a section for it, using some example values (but by no means the final word on how to configure ruff! It depends on your own or your organisations' preferences).
 
 
 ```toml
@@ -176,23 +179,47 @@ fixable = ["ALL"]
 convention = "google"
 ```
 
-I won't go into extreme detail about the above configuration, as a better reference would be the ruff docs themselves[[15]](https://docs.astral.sh/ruff/configuration/). It is worth noting that the headings and format of the ruff configuration section are subject to change, and the latest version of ruff may expect something different to what is shown in this post. So, make sure to give the documentation a read through in case of any unexpected errors!
+I won't go into extreme detail about the above configuration, as a better reference would be the ruff docs themselves[[13]](https://docs.astral.sh/ruff/configuration/). It is worth noting that the headings and format of the ruff configuration section are subject to change, and the latest version of ruff may expect something different to what is shown in this post. So, make sure to give the documentation a read through in case of any unexpected errors!
 
-In short, we've told ruff to expect a line length of 100 chars (agreeing with Linus Torvalds[[16]](https://linux.slashdot.org/story/20/05/31/211211/linus-torvalds-argues-against-80-column-line-length-coding-style-as-linux-kernel-deprecates-it)), an indent width of 4 spaces, and to use double quotes. We've also specified a set of rules to check against and fix, pulling from `flake8`, `pycodestyle`, `pyflakes` and `isort`. We can now run ruff against our codebase using 
+In short, we've told ruff to expect a line length of 100 chars (agreeing with Linus Torvalds[[14]](https://linux.slashdot.org/story/20/05/31/211211/linus-torvalds-argues-against-80-column-line-length-coding-style-as-linux-kernel-deprecates-it)), an indent width of 4 spaces, and to use double quotes. We've also specified a set of rules to check against and fix, pulling from `flake8`, `pycodestyle`, `pyflakes` and `isort`. We can now run ruff against our codebase using 
 
 ```bash
 $ ruff check --fix
 ```
 
-For updates on file changes, you can also run `ruff check --watch`, but it's often easier to use some IDE integration (VSCode[[17]](https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff), JetBrains[[18]](https://plugins.jetbrains.com/plugin/20574-ruff), Vim[[19]](https://github.com/dense-analysis/ale)).
+For updates on file changes, we can also run `ruff check --watch`, but it's often easier to use some IDE integration (VSCode[[15]](https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff), JetBrains[[16]](https://plugins.jetbrains.com/plugin/20574-ruff), Vim[[17]](https://github.com/dense-analysis/ale)).
+
+Adding ruff into the `pyproject.toml` configuration file like this, as well as pinning the version of ruff in the dependencies, ensures that any other developers of our code will have the same working configuration of ruff present to keep their code style consistent with the already existing codebase. In this manner, a uniform development experience can be had by all contributors.
 
 
+MyPy
+----
+
+A blank project is also the best time[[18]](https://mypy.readthedocs.io/en/stable/existing_code.html) to integrate `mypy`, which bring static type checking to python *a la* compiled languages. The benefits of type safety and compiled languages, and the usage of mypy, is a blog post in itself; suffice to say here that our code will be more understandable to new developers and less error prone if we incorporate type hints and utilise a type checker such as mypy. I would make the argument that we should absolutely include it in our new-fangled `pyproject.toml`-based python program being set up here, and so, as with ruff, we will add a section for it:
+
+```toml
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+disallow_untyped_defs = true
+```
+
+The python version should match the version of python you're using in your virtual environment. Now we can run
+
+```bash
+$ mypy .
+```
+
+to type-check any code we have in our codebase, and act on any errors accordingly. For more in depth usage instructions, see the mypy documentation[[19]](https://mypy.readthedocs.io/en/stable/index.html). Again, there are integrations available for your usual IDEs (VSCode[[20]](https://github.com/microsoft/vscode-mypy), JetBrains[[21]](https://github.com/leinardi/mypy-pycharm), Vim[[22]](https://github.com/dense-analysis/ale)).
 
 
+Alright! Our development environment is in great shape! Anyone trying to work on our codebase needs only python and pip to follow a frictionless entrypoint to consistent coding bliss. I can already picture the glorious short, easy-to-understand nature of the "Development" section of the README! So now lets switch our focus to building our code, and see how the `pyproject.toml` file once again lets us keep things consolidated.
 
 
 Packaging for Distribution
 ==========================
+
+If your project is intended as use as an installable library, or a command line tool, chances are you're going to want to publish a distribution of it to PyPi. Building an `sdist` or `wheel` requires the use of a build backend, as mentioned in the [Background](#background-why-do-we-need-pyproject). Here, we'll use setuptools. 
 TODO - talk about entrypoints, metadata, versioning
 
 
