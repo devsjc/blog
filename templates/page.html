@@ -25,6 +25,8 @@
     <p style="font-size:90%;">Posted on <time datetime="{{ page.date | date(format="%+") }}">{{ page.date | date(format="%B %d, %Y") }}</time></p>
   {% endif %}
 
+  {{ macros::toc() }}
+
   {{ page.content | safe }}
 </article>
 {% endblock content %}

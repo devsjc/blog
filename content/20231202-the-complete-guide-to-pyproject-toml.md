@@ -3,7 +3,7 @@ title: "The Complete Guide To pyproject.toml"
 subtitle: "The simplest way to manage and package python projects"
 description: "A walkthrough detailing a python setup that ditches poetry, setup.py, and even requirements.txt."
 author: devsjc
-date: 15 September, 2023
+date: 2023-09-15
 tags: [pyproject, python, packaging]
 ---
 
