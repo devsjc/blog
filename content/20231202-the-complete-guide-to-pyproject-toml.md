@@ -7,6 +7,8 @@ date: 15 September, 2023
 tags: [pyproject, python, packaging]
 ---
 
+*Just looking for a `pyproject.toml` to copy to your new project? See the [accompanying gist](https://gist.github.com/devsjc/86b896611d780e3e3c937b9c48682f31)!*
+
 Background: Why use pyproject at all?
 =====================================
 
@@ -95,7 +97,7 @@ Now, as before, running `pip install -e .` installs only the dependencies specif
 $ pip install -e .[test]
 ```
 
-> Note: [zsh](https://www.zsh.org/) users (that's likely you if you're using a Mac) will need to escape the square brackets with a backslash, e.g. `pip install -e .\[test\]`!
+> Note: `zsh` users (that's likely you if you're using a Mac) will need to escape the square brackets with a backslash, e.g. `pip install -e .\[test\]`! This is because `zsh` uses square brackets for pattern matching[[9]](https://zsh.sourceforge.io/Guide/zshguide05.html#l135).
 
 Now we also want to lint our project to ensure consistency of code, but again, we don't want to include their distributions in our production build as, again, they aren't necessary for running the service - so we do the same thing, this time with a linting section:
 
@@ -140,12 +142,53 @@ $ pip install -e .[dev]
 
 to pull in everything they might need, but someone else who just wants to run the test suite can still do so, as we haven't lost the granularity of pulling only the necessary requirements for testing.
 
-Phew! We've entirely replaced `requirements.txt` and some, enabling extra useful functionality to boot. But now we've got our dependencies sorted, how do we make sure all developers are linting and formatting the code in the same way? Lets go about removing some more config files...
+
+Phew! We've entirely replaced `requirements.txt` and some, enabling extra useful functionality to boot. But now we've got our dependencies sorted, how do we make sure all developers are linting and formatting the code in the same way? Lets go about removing some more config files, and while we're at it, lets learn what we were on about in the `lint` dependency array with "ruff" and "mypy"...
 
 
 Configuring Linters
 ===================
-TODO - talk about ruff, mypy
+
+There are many linting and fixing tools available for python (Flake8[[10]](https://flake8.pycqa.org/en/latest/index.html), isort[[11]](https://pycqa.github.io/isort/), Black[[12]](https://black.readthedocs.io/en/stable/) to name a few), all of which would often be configured in `setup.cfg`, `tox.ini`, or other tool-specific dotfiles. Even before we consolidate configuration to our `pyproject,toml` file, lets go one further and consolidate these tools into one first - `ruff`[[13]](https://github.com/astral-sh/ruff). If you've already heard of it, great! I hope you're using it already. If you haven't or aren't, now is a great time to start - it's quick[[13]](https://astral.sh/blog/the-ruff-formatter), it's fast[[14]](https://docs.astral.sh/ruff/#testimonials), and it's got pace[[14]](https://www.youtube.com/watch?v=AfQarImZ97Y&t=228s). It also bundles all three tools mentioned above, integrates well with IDEs, and of course, is configurable using `pyproject.toml`. Lets add a section for it, using some example values (but by no means the final word on how to configure ruff! It depends on your own or your organisations' preferences).
+
+
+```toml
+[tool.ruff]
+line-length = 100
+indent-width = 4
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.ruff.lint]
+select = [
+    "F",   # pyflakes
+    "E",   # pycodestyle
+    "I",   # isort
+    "ANN", # flake8 type annotations
+    "RUF", # ruff-specific rules
+]
+fixable = ["ALL"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+```
+
+I won't go into extreme detail about the above configuration, as a better reference would be the ruff docs themselves[[15]](https://docs.astral.sh/ruff/configuration/). It is worth noting that the headings and format of the ruff configuration section are subject to change, and the latest version of ruff may expect something different to what is shown in this post. So, make sure to give the documentation a read through in case of any unexpected errors!
+
+In short, we've told ruff to expect a line length of 100 chars (agreeing with Linus Torvalds[[16]](https://linux.slashdot.org/story/20/05/31/211211/linus-torvalds-argues-against-80-column-line-length-coding-style-as-linux-kernel-deprecates-it)), an indent width of 4 spaces, and to use double quotes. We've also specified a set of rules to check against and fix, pulling from `flake8`, `pycodestyle`, `pyflakes` and `isort`. We can now run ruff against our codebase using 
+
+```bash
+$ ruff check --fix
+```
+
+For updates on file changes, you can also run `ruff check --watch`, but it's often easier to use some IDE integration (VSCode[[17]](https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff), JetBrains[[18]](https://plugins.jetbrains.com/plugin/20574-ruff), Vim[[19]](https://github.com/dense-analysis/ale)).
+
+
+
+
 
 
 Packaging for Distribution
