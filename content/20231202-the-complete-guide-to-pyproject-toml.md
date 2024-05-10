@@ -232,6 +232,7 @@ build-backend = "setuptools.build_meta"
 
 Now, running our `pip install` commands from before also installs the build system packages. Not very exciting! So what can we do with this now we have it available?
 
+
 Entrypoints
 -----------
 
@@ -291,21 +292,50 @@ Install the development dependencies and program scripts via `pip install -e .[d
 The cli is then accessible through the command `coolprojectcli`.
 ```
 
+
 Metadata
 --------
 
-Speaking of the `README.md`, it would be useful if people viewing the package on PyPi could be privvy to the same information.
+Speaking of the `README.md`, it would be useful if people viewing the package on PyPi could be privvy to the same information as those viewing the source code itself. To this end, there's lots of metadata[[24]](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/) that can be specified in `pyproject.toml` that build backends such as setuptools surface to PyPi (and other artifact repositories). We can enrich our project with some additions to the `[project]` section, such as author details, a description, a README embed, a license and so on.
+
+```toml
+[project]
+name = "cool-python-project"
+description = "A python project that is inexplicably cool"
+requires-python = ">=3.12.0"
+version = "0.1.0"
+authors = [
+    {name = "Your Name", email = "your@email.com"},
+]
+license = {text = "BSD-3-Clause"}
+readme = "README.md"
+dependencies = [
+    "numpy == 1.24.2",
+    "structlog == 22.1.0"
+]
+```
+
+The document specified as the `readme` will be used as the README of the built source distribution and shown on the PyPi page for the project, in this case, a file in the root of the repository called "README.md". The specified authors will be displayed with email links on the publish page (if included; email is an optional field[[25]](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#authors-maintainers)), along with the licensing information. This is useful not just for filtering packages, but also in an organisational setting it can help clarify who is primarily responsible for a piece of code. The `requires-python` key limits the installation of the package to only virtual environments that meet the requirements, helping prevent incompatibility errors from users running the service in an invalid environment. More detail on what is available as metadata can be found in the setuptools documentation[[26]](https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html) and the official python packaging user guide[[27]](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/).
 
 
-TODO - talk about entrypoints, metadata, versioning
+Now we've got our build backend set up, we're ready to build our wheel! Thanks to all our configuration specification in `pyproject.toml`, this is done via
+
+```bash
+$ python -m build --wheel
+```
+
+This builds a wheel in the newly-created `dist/` directory at the root of the codebase (make sure it's in your `.gitignore`!), which can then be uploaded to PyPi using `twine` - however it's more likely you'll want to do this as part of a CI process. We'll come on to that after the next section.
 
 
 Multi-stage Dockerfiles
 =======================
-TODO
+
 
 Bonus: Efficient GitHub Actions usage
 =====================================
+
+Bonus: Automatic Versioning
+===========================
 
 Bonus: Automatic Documentation
 ==============================
