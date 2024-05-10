@@ -95,7 +95,52 @@ Now, as before, running `pip install -e .` installs only the dependencies specif
 $ pip install -e .[test]
 ```
 
-Note: [zsh](https://www.zsh.org/) users (that's likely you if you're using a Mac) will need to escape the square brackets with a backslash (`pip install -e .\[test\]`)!
+> Note: [zsh](https://www.zsh.org/) users (that's likely you if you're using a Mac) will need to escape the square brackets with a backslash, e.g. `pip install -e .\[test\]`!
+
+Now we also want to lint our project to ensure consistency of code, but again, we don't want to include their distributions in our production build as, again, they aren't necessary for running the service - so we do the same thing, this time with a linting section:
+
+```toml
+[project.optional-dependencies]
+test = [
+    "moto[s3] == 4.2.11",
+    "pytest == 8.2.0",
+    "behave == 1.2.6",
+]
+lint = [
+    "ruff == 0.4.4",
+    "mypy == 1.10.0",
+]
+```
+
+Now, developers can install the linting requirements as above, swapping `test` for `lint`. 
+
+This separation is useful as it clearly defines the concerns each requirement corresponds to, but it might get annoying for a developer adding features to the codebase to remember to install both the `test` and `lint` optional dependencies every time they set up their virtual environment. Thankfully, we can make an easy shorthand for them whilst keeping the modularity brought by the separation of dependencies.
+
+```toml
+[project.optional-dependencies]
+test = [
+    "moto[s3] == 4.2.11",
+    "pytest == 8.2.0",
+    "behave == 1.2.6",
+]
+lint = [
+    "ruff == 0.4.4",
+    "mypy == 1.10.0",
+]
+dev = [
+    "cool-python-project[test,lint]",
+]
+```
+
+Here we have added a `dev` section to out optional dependencies, intended for local development, which installs all the optional groups required for that task - in this case, `test` and `lint`. Note that `cool-python-project` must be taken verbatim from the `name` field in the `[project]` section, so change this accordingly! Now all a new developer has to do is 
+
+```bash
+$ pip install -e .[dev]
+```
+
+to pull in everything they might need, but someone else who just wants to run the test suite can still do so, as we haven't lost the granularity of pulling only the necessary requirements for testing.
+
+Phew! We've entirely replaced `requirements.txt` and some, enabling extra useful functionality to boot. But now we've got our dependencies sorted, how do we make sure all developers are linting and formatting the code in the same way? Lets go about removing some more config files...
 
 
 Configuring Linters
