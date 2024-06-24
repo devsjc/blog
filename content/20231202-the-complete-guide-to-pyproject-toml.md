@@ -3,7 +3,7 @@ title: "The Complete Guide To pyproject.toml"
 subtitle: "The simplest way to manage and package python projects"
 description: "A walkthrough detailing a python setup that ditches poetry, setup.py, and even requirements.txt."
 author: devsjc
-date: 2023-09-15
+date: 2024-05-12
 tags: [pyproject, python, packaging]
 ---
 
@@ -51,7 +51,7 @@ The first piece of functionality we'll investigate is that of managing your depe
 name = "cool-python-project"
 version = "0.1.0"
 dependencies = [
-    "numpy == 1.24.2",
+    "numpy == 1.26.4",
     "structlog == 22.1.0"
 ]
 ```
@@ -310,7 +310,7 @@ authors = [
 license = {text = "BSD-3-Clause"}
 readme = "README.md"
 dependencies = [
-    "numpy == 1.24.2",
+    "numpy == 1.26.4",
     "structlog == 22.1.0"
 ]
 ```
@@ -324,7 +324,7 @@ Now we've got our build backend set up, we're ready to build our wheel! Thanks t
 $ python -m build --wheel
 ```
 
-This builds a wheel in the newly-created `dist/` directory at the root of the codebase (make sure it's in your `.gitignore`!), which can then be uploaded to PyPi using `twine` - however it's more likely you'll want to do this as part of a CI process. We'll come on to that after the next section.
+This builds a wheel in the newly-created `dist/` directory at the root of the codebase (make sure it's in your `.gitignore`, and make sure you've installed `setuptools` and `wheel` with `pip` in your virtual environment!), which can then be uploaded to PyPi using `twine` - however it's more likely you'll want to do this as part of a CI process. We'll come on to that after the next section.
 
 Next, lets move away from why and how we should use a `pyproject.toml` file, and instead see it in action in scenarios you will be familiar with from across the development lifecycle: CI/CD and Containerisation. This article will now act less as a tutorialized resource and more as a solutions reference, describing how to achieve certain goals with the new `pyproject.toml` setup.
 
@@ -339,12 +339,12 @@ One thing that I struggled with after adopting `pyproject.toml` was my usual mul
 
 # Create a virtual environment and install dependencies
 # * Only re-execute this step when pyproject.toml changes
-# * Don't build a binary for the cool-python-project package
-FROM python-3.12 AS build-reqs
+FROM python:3.12 AS build-reqs
 WORKDIR /app
 COPY pyproject.toml pyproject.toml
 RUN python -m venv /venv
-RUN /venv/bin/pip install -q . --no-binary=cool-python-project
+RUN /venv/bin/python -m pip install -U setuptools wheel
+RUN /venv/bin/pip install -q .
 
 # Build binary for the package and install code
 # * The README.md is required for the long description
@@ -363,8 +363,8 @@ ENTRYPOINT ["/venv/bin/coolprojectcli"]
 
 There's a few nuances in here.
 
-1. `RUN /venv/bin/pip install -q . --no-binary=cool-python-project`: Since we have specified a script with an entrypoint to the program at `my_package.main:main`, but we have not passed the codebase to this stage of the Dockerfile, pip will complain trying to install our project - unless we specify `--no-binary`. Also note that we only install the core dependencies in order to keep our virtual environment as small as possible. Here `cool-python-project` must match the `name` we specified in our `[project]` section.
-2. `RUN /venv/bin/pip install .`: Since we didn't build the scripts for our library earlier, we must do so now with another call to `pip install` after copying over the source code.
+1. `RUN /venv/bin/pip install -q .`: Here we only install the core dependencies in order to keep our virtual environment as small as possible. Also it is worth noting that since we have specified a script with an entrypoint to the program at `my_package.main:main`, but we have not passed the codebase to this stage of the Dockerfile, pip may complain trying to install our project. This can be mitigated by creating an empty `src/my_package` directory in the docker layer. This might only be a problem with older python versions than 3.12, it doesn't always seem to show up!
+2. `RUN /venv/bin/pip install .`: Since we didn't build the scripts for our library earlier, we must do so now with another call to `pip install` after copying over the source code. This won't reinstall any of the dependencies, since they were already downloaded into the virtual environment in the previous layer.
 3. `FROM gcr.io/distroless/python3-debian11`: In order to improve the security and reduce the size of our final container[[28]](https://github.com/GoogleContainerTools/distroless), we use a distroless image, just including the runtime dependencies by copying the virtual environment from the `build-app` stage.
 4. `ENTRYPOINT ["/venv/bin/coolprojectcli"]`: We leverage the script we specified [earlier](#entrypoints) to make the Dockerfile act akin to the instantiation of the script itself. In this manner, whatever we tag the built image as can be used as a stand-in for the `coolprojectcli` binary.
 
@@ -387,8 +387,6 @@ positional arguments:
 options:
   -h, --help  show this help message and exit
 ```
-
-> Note: the `--no-binary` technically still builds the package and the scripts. If I'm honest, I'm not sure why it prevents complaints about missing source files! If someone knows of a better Dockerfile structure that makes more logical sense whilst achieving the same result, I'd be interested to hear it - and I'll include any updates here as I discover them. Maybe one day there'll be a PEP specifying some fabled `--only-dependencies` flag to pip install...
 
 
 Bonus: Efficient GitHub Actions usage
