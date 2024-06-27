@@ -10,7 +10,7 @@ build_search_index = false
 
 
 # Whether to generate RSS feed
-generate_feed = true
+generate_feeds = true
 
 [markdown]
 highlight_code = true
