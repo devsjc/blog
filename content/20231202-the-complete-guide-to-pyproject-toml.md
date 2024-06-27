@@ -12,7 +12,7 @@ tags: [pyproject, python, packaging]
 Background: Why do we need pyproject?
 =====================================
 
-Let's get the elephant in the room out of the way first, because I know what some of you are thinking: Isn't pyproject.toml the [poetry](https://python-poetry.org/) configuration file? Well, yes it is, but you might not know that it's actually a general python project configuration file that works with many build frontends and backends[[1]](https://packaging.python.org/en/latest/tutorials/packaging-projects/#choosing-a-build-backend), poetry being one such frontend example. So this blog won't be talking about poetry at all. In fact, in favour of creating the most ubiquitous, understandable, and portable python project setup possible, I'll be explaining how to use pyproject with the most widely used build frontend - `pip` - and backend - `setuptools`[[2]](https://drive.google.com/file/d/1U5d5SiXLVkzDpS0i1dJIA4Hu5Qg704T9/view).
+Let's get the elephant in the room out of the way first, because I know what some of you are thinking: Isn't `pyproject.toml` the [poetry](https://python-poetry.org/) configuration file? Well, yes it is, but you might not know that it's actually a general python project configuration file that works with many build frontends and backends[[1]](https://packaging.python.org/en/latest/tutorials/packaging-projects/#choosing-a-build-backend), poetry being one such frontend example. So this blog won't be talking about poetry at all. In fact, in favour of creating the most ubiquitous, understandable, and portable python project setup possible, I'll be explaining how to use pyproject with the most widely used build frontend - `pip` - and backend - `setuptools`[[2]](https://drive.google.com/file/d/1U5d5SiXLVkzDpS0i1dJIA4Hu5Qg704T9/view).
 
 So what is wrong with the current way of packaging python projects that might warrant a switch to pyproject-based management? Consider the following not-too-far-fetched pattern for the root of a python repo:
 
@@ -363,8 +363,8 @@ ENTRYPOINT ["/venv/bin/coolprojectcli"]
 
 There's a few nuances in here.
 
-1. `RUN /venv/bin/pip install -q .`: Here we only install the core dependencies in order to keep our virtual environment as small as possible. Also it is worth noting that since we have specified a script with an entrypoint to the program at `my_package.main:main`, but we have not passed the codebase to this stage of the Dockerfile, pip may complain trying to install our project. This can be mitigated by creating an empty `src/my_package` directory in the docker layer. This might only be a problem with older python versions than 3.12, it doesn't always seem to show up!
-2. `RUN /venv/bin/pip install .`: Since we didn't build the scripts for our library earlier, we must do so now with another call to `pip install` after copying over the source code. This won't reinstall any of the dependencies, since they were already downloaded into the virtual environment in the previous layer.
+1. `RUN /venv/bin/pip install -q .`: Here we only install the core dependencies in order to keep our virtual environment as small as possible. Also it is worth noting that since we have specified a script with an entrypoint to the program at `my_package.main:main`, but we have not passed the codebase to this stage of the Dockerfile, any attempts at using our entrypoint at this layer will fail.
+2. `RUN /venv/bin/pip install .`: Since we didn't build the script for our library earlier, we must do so now with another call to `pip install` after copying over the source code. This won't reinstall any of the dependencies, since they were already downloaded into the virtual environment in the previous layer.
 3. `FROM gcr.io/distroless/python3-debian11`: In order to improve the security and reduce the size of our final container[[28]](https://github.com/GoogleContainerTools/distroless), we use a distroless image, just including the runtime dependencies by copying the virtual environment from the `build-app` stage.
 4. `ENTRYPOINT ["/venv/bin/coolprojectcli"]`: We leverage the script we specified [earlier](#entrypoints) to make the Dockerfile act akin to the instantiation of the script itself. In this manner, whatever we tag the built image as can be used as a stand-in for the `coolprojectcli` binary.
 
@@ -508,15 +508,4 @@ I know what you're thinking: *We're still running pip install in the test-unit j
 
 I know what else you're thinking: *Why did we bother to separate dependencies out if we're going to build the wheel using a virtual environment with the test dependencies installed?* Another good spot! We did install the test requirements into the cached virtual environment. It's okay to do this because `pip wheel` will only look for what is specified in the `dependencies` section to include as dependencies of the wheel. Our wheel stays no bigger than the size it needs to be!
 
-And I know what else else you're thinking: *What other useful things can I do with this pyproject file? I've learned so much I don't want to stop!* Well, handily for you, we're not quite done here. Lets learn about two more bonus tips and tricks to do with our `pyproject.toml` file: [automatic versioning](#bonus-automatic-versioning), and [automatic documentation](#bonus-automatic-documentation). 
-
-Bonus: Automatic Versioning
-===========================
-
-Coming soon!
-
-Bonus: Automatic Documentation
-==============================
-
-
-Coming soon!
+Now all your misgivings have been allayed, I hope that the next time you have to set up a Python project, you'll feel comfortable doing so using `pyproject.toml`.
