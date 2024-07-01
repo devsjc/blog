@@ -24,7 +24,7 @@ jobs:
       - name: Install pngquant
         run: sudo apt install pngquant
       - name: Optimize images
-        run: pngquant -f --ext .png 256 **/*.png  
+        run: pngquant -f --ext .png 256 static/**/*.png  
       - name: Generate site content
         run: zola build
       - name: Setup Pages
