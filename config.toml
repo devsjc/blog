@@ -23,7 +23,7 @@ footer_links = [
     {url = "$BASE_URL/atom.xml", name = "RSS"},
 ]
 social_links = [
-    {url = "https://medium.com/@devsjc", name = "Medium", emoji = "⭐"},
-    {url = "https://github.com/devsjc/blog", name = "GiHub", emoji = "👏"},
+    {url = "https://medium.com/@devsjc", name = "Medium", emoji = "👏"},
+    {url = "https://github.com/devsjc/blog", name = "GiHub", emoji = "⭐" },
     {url = "$BASE_URL/atom.xml", name = "RSS", emoji = "📡"},
 ]

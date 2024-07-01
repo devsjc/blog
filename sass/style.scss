@@ -27,11 +27,25 @@ html, body {
       Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
       "Segoe UI Symbol";
 }
+code {
+  /* Inline code */
+  color: var(--tx-1);
+  font-size: 0.9em;
+  padding: 0.2em 0.4em;
+  font: 15px/1.5 "Source Code Pro", Menlo, Monaco, Consolas, "Courier New",
+      monospace;
+}
 
 h1, h2, h3, h4, h5, h6 {
   line-height: 1;
   color: var(--tx-1);
   padding-top: .875rem;
+}
+h1 {
+  font-weight: bold;
+}
+h2 {
+  font-size: 1.1rem;
 }
 
 a, a:visited {
@@ -50,7 +64,8 @@ pre {
 	background: var(--bg-1);
 	overflow: scroll;
 	padding: 1rem;
-  font-size: medium;
+    font-size: medium;
+    border-radius: 6px;
 }
 td {
 	border: 1px solid var(--tx-2);
@@ -61,8 +76,8 @@ img {
 	max-width: 100%;
 }
 .post-list {
-  list-style: none;
-  padding: 0 0;
+    list-style: none;
+    padding: 0 0;
 }
 .post-list li {
 	align-items: center;
