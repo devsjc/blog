@@ -82,6 +82,10 @@ The `pyproject.toml` file improves upon `requirements.txt` by allowing the speci
 
 For instance, say our project has its test suite written in [pytest](https://pypi.org/project/pytest/), with a few [behave](https://pypi.org/project/behave/) features thrown in. Furthermore, these tests are running against mock s3 services requiring the [moto](https://pypi.org/project/moto) library. The moto wheel is nearly 4 Mb by itself, which may not sound a lot, but these numbers add up as more external libraries are pulled in: failure to keep an eye on dependency sizes leads to bloated, slow-to-download dockerfiles, wheels, long build pipelines, and frustrated developers! So lets be vigilant and namespace these requirements under an optional dependency group:
 
+> UPDATE 2025:
+> Use `[dependency-groups]` instead of `[project.optional-dependencies]` see [PEP 735](https://peps.python.org/pep-0735/)
+
+
 ```toml
 [project.optional-dependencies]
 test = [
@@ -507,5 +511,94 @@ jobs:
 I know what you're thinking: *We're still running pip install in the test-unit job! What gives?* Good spot, it's true - and in fact it's completely necessary. Running pip install at this point, after restoring the cached virtual environment, will take no time at all, as all the dependencies are already installed. `pip` will see this, and promptly skip reinstallation, so we don't lose any time here. But we have to install the package here as, whilst the dependencies and so the virtual environment might not have changed here, the source code almost certainly will have. As such, running `pip install` again here ensures we are using an up to date version of the repository in our testing.
 
 I know what else you're thinking: *Why did we bother to separate dependencies out if we're going to build the wheel using a virtual environment with the test dependencies installed?* Another good spot! We did install the test requirements into the cached virtual environment. It's okay to do this because `pip wheel` will only look for what is specified in the `dependencies` section to include as dependencies of the wheel. Our wheel stays no bigger than the size it needs to be!
+
+Bonus: Automatic semantic versioning
+====================================
+
+One final bonus feature of `pyproject.toml` is the ability to automatically version your package using the `version` key in the `[project]` section. This can be done, without any `.bumpversion.cfg` or similar files, by using the [setuptools-git-verioning](https://setuptools-git-versioning.readthedocs.io/en/v2.1.0/) package.
+
+This tool uses regular git tags to determine the version of the package, and is installed by modifying the `[build-system]` table at the top of the `pyproject.toml` file:
+
+```toml
+[build-system]
+requires = ["setuptools>=67", "wheel", "setuptools-git-versioning>=2.0,<3"]
+build-backend = "setuptools.build_meta"
+```
+
+We also have to tell `setuptools` to use this tool when determining the version, via
+
+```toml
+[project]
+# version = "0.1.0" Remove this line
+dynamic = ["version"] # Add this line
+
+[tool.setuptools-git-versioning]
+enabled = true
+```
+
+Now, when your package is built, `setuptools` will look at your git tags and determine the version according to your proximity to the latest one. This can be retrieved at runtime using `importlib`:
+
+```python
+from importlib.metadata import PackageNotFoundError, version
+
+# Get package version
+try:
+    __version__ = version("cloudcasting-app")
+except PackageNotFoundError:
+    __version__ = "v?"
+
+print(__version__)
+```
+
+Changing the version can be done by making a new tag:
+
+```sh
+$ git tag -a v0.2.0 -m "Minor changes for 0.2.0"
+$ git push --follow-tags
+```
+
+But doing this manually is a not a necessary chore at all! To automatically bump the version, for instance on merges to a main branch, use a job like the following in GitHub actions:
+
+```yaml
+name: Default Branch PR Merged CI
+
+on:
+  pull_request:
+    types: ["closed"]
+    branches: ["main"]
+
+jobs:
+
+  # Define an autotagger job that creates tags on changes to master
+  # Use #major #minor in merge commit messages to bump version beyond patch
+  bump-tag:
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'pull_request' && 
+      github.event.action == 'closed' && 
+      github.event.pull_request.merged == true
+    permissions:
+      contents: write
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.67.0
+        id: tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_BRANCHES: main
+          WITH_V: true
+          DEFAULT_BUMP: patch
+          GIT_API_TAGGING: false
+```
+
+This will do a patch bump by default, but you can specify a major or minor bump by including `#major` or `#minor` in the merge commit message. No more thinking about versioning!
 
 Now all your misgivings have been allayed, I hope that the next time you have to set up a Python project, you'll feel comfortable doing so using `pyproject.toml`.
