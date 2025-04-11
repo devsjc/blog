@@ -14,7 +14,7 @@ generate_feeds = true
 
 [markdown]
 highlight_code = true
-highlight_theme = "nord"
+highlight_theme = "OneHalfDark"
 render_emoji = true
 
 [extra]

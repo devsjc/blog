@@ -21,6 +21,11 @@
   --body-max-width: 680px;
 }
 
+@font-face {
+  font-family: "source-serif-pro";
+  src: url("SourceSerif4-VariableFont_opsz,wght.ttf");
+}
+
 html {
   scrollbar-gutter: stable;
 }
@@ -116,6 +121,15 @@ header ul li {
 	}
 }
 
+aside {
+  border: 2px var(--tx-2) dotted;
+  box-sizing: border-box;
+  color: var(--tx-2);
+  font-style: italic;
+  padding: 10px;
+  width: 100%;
+}
+
 aside:nth-of-type(odd) {
   right: 3%;
 }
@@ -162,6 +176,7 @@ cite.article::after {
   content: "\201D";
 }
 
+/* Inline code */
 code:not(pre code) {
   font-family: source-code-pro, Menlo, Monaco, "Courier New", Courier, monospace;
   padding: 0 .25rem;
@@ -178,7 +193,7 @@ pre {
   font-family: source-code-pro, Menlo, Monaco, "Courier New", Courier, monospace;
   letter-spacing: -0.022em;
   display: block;
-  padding: 1rem;
+  padding: 28px;
   font-size: 14px;
   line-height: 1.4;
   margin-bottom: -0.2em;
