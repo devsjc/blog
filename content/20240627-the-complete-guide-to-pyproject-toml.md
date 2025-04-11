@@ -4,7 +4,7 @@ subtitle: "The simplest way to manage and package python projects"
 description: "A walkthrough detailing a python setup that ditches poetry, setup.py, and even requirements.txt."
 author: devsjc
 date: 2024-06-27
-tags: [pyproject, python, packaging]
+tags: [pyproject, python, packaging, guide]
 ---
 
 *Just looking for a `pyproject.toml` to copy to your new project? See the
