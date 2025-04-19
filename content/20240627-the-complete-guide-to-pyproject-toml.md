@@ -49,8 +49,8 @@ cool-python-project
 
 So many files! Lets talk through why each of these files are here, and why they perhaps shouldn't be.
 
-It has been known for a long time the security risk posed by `setup.py` files[[3]](https://www.siliconrepublic.com/enterprise/python-package-security-flaw-setup-vulnerability-hack-developers)
-- the code within is executed on download of a `sdist` format package by pip, and since it's
+It has been known for a long time the security risk posed by `setup.py` files[[3]](https://www.siliconrepublic.com/enterprise/python-package-security-flaw-setup-vulnerability-hack-developers) -
+the code within is executed on download of a `sdist` format package by pip, and since it's
 editable by the author of the package, could contain malicious code. This is partially solved by
 the introduction of `wheels` and the use of the declarative `setup.cfg`, often used to defining
 linting configuration and package metadata, but you will regularly still encounter a "dummy"

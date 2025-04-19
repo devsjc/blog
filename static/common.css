@@ -23,7 +23,7 @@
 
 @font-face {
   font-family: "source-serif-pro";
-  src: url("SourceSerif4-VariableFont_opsz,wght.ttf");
+  src: url("/fonts/source-serif-pro-400-normal") format("woff");
 }
 
 html {
