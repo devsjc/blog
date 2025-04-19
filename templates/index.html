@@ -12,10 +12,27 @@
     <link rel="shortcut icon"  href="{{ get_url(path="assets/favicon.ico") | safe }}" />
     <link rel="alternate" type="application/atom+xml" title="RSS" href="{{ get_url(path="atom.xml") | safe }}">
 
-    {% set data = load_data(path="common.css", format="plain") -%}
-    <style>{{ data | safe }}</style>
-    <link rel="stylesheet" type="text/css" href="/syntax-theme-dark.css" media="(prefers-color-scheme: dark)" />
-    <link rel="stylesheet" type="text/css" href="/syntax-theme-light.css" media="(prefers-color-scheme: light)" />
+    <link rel="stylesheet" type="text/css" href="{{ get_url(path="/common.css") | safe }}" />
+    <link rel="stylesheet" type="text/css" href={{ get_url(path="/syntax-theme-dark.css") | safe }} media="(prefers-color-scheme: dark)" />
+    <link rel="stylesheet" type="text/css" href={{ get_url(path="/syntax-theme-light.css") | safe }} media="(prefers-color-scheme: light)" />
+    <style>
+        @font-face {
+          font-family: "source-serif-pro";
+          src: url("{{ get_url(path="/fonts/source-serif-pro-400-normal.woff") }}") format("woff");
+          font-style: normal;
+        }
+        @font-face {
+          font-family: "source-serif-pro";
+          src: url("{{ get_url(path="/fonts/source-serif-pro-400-italic.woff") }}") format("woff");
+          font-style: italic;
+        }
+
+        @font-face {
+          font-family: "junction";
+          src: url("{{ get_url(path="/fonts/junction-bold.woff") }}") format("woff");
+          font-style: bold;
+        }
+    </style>
 
     {% block seo -%}
       <meta property="og:site_name" content="{% block ogsitename %}{{config.title}}{% endblock ogsitename %}">

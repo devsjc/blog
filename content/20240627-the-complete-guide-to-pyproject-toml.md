@@ -155,10 +155,6 @@ more external libraries are pulled in: failure to keep an eye on dependency size
 slow-to-download dockerfiles, wheels, long build pipelines, and frustrated developers! So lets be
 vigilant and namespace these requirements under an optional dependency group:
 
-> UPDATE 2025:
-> Use `[dependency-groups]` instead of `[project.optional-dependencies]` see [PEP 735](https://peps.python.org/pep-0735/)
-
-
 ```toml
 [dependency-groups]
 test = [
@@ -176,9 +172,11 @@ have to explicitly request them:
 $ pip install -e .[test]
 ```
 
-> Note: `zsh` users (that's likely you if you're using a Mac) will need to escape the square
-brackets with a backslash, e.g. `pip install -e .\[test\]`! This is because `zsh` uses square
-brackets for pattern matching[[9]](https://zsh.sourceforge.io/Guide/zshguide05.html#l135).
+<aside>
+Note that `zsh` users (that's likely you if you're using a Mac) will need to escape the square
+brackets with a backslash, e.g. <code>pip install -e .\[test\]</code>! This is because
+<code>zsh</code> uses square brackets for pattern matching<a href="https://zsh.sourceforge.io/Guide/zshguide05.html#l135">[9]</a>.
+</aside>
 
 Now we also want to lint our project to ensure consistency of code, but again, we don't want to
 include their distributions in our production build as, again, they aren't necessary for running
@@ -731,13 +729,16 @@ spot! We did install the test requirements into the cached virtual environment. 
 because `pip wheel` will only look for what is specified in the `dependencies` section to include
 as dependencies of the wheel. Our wheel stays no bigger than the size it needs to be!
 
-<<<<<<< HEAD
 Bonus: Automatic semantic versioning
 ====================================
 
-One final bonus feature of `pyproject.toml` is the ability to automatically version your package using the `version` key in the `[project]` section. This can be done, without any `.bumpversion.cfg` or similar files, by using the [setuptools-git-verioning](https://setuptools-git-versioning.readthedocs.io/en/v2.1.0/) package.
+One final bonus feature of `pyproject.toml` is the ability to automatically version your package
+using the `version` key in the `[project]` section. This can be done, without any
+`.bumpversion.cfg` or similar files, by using the [setuptools-git-verioning](https://setuptools-git-versioning.readthedocs.io/en/v2.1.0/)
+package.
 
-This tool uses regular git tags to determine the version of the package, and is installed by modifying the `[build-system]` table at the top of the `pyproject.toml` file:
+This tool uses regular git tags to determine the version of the package, and is installed by
+modifying the `[build-system]` table at the top of the `pyproject.toml` file:
 
 ```toml
 [build-system]
@@ -756,7 +757,8 @@ dynamic = ["version"] # Add this line
 enabled = true
 ```
 
-Now, when your package is built, `setuptools` will look at your git tags and determine the version according to your proximity to the latest one. This can be retrieved at runtime using `importlib`:
+Now, when your package is built, `setuptools` will look at your git tags and determine the version
+according to your proximity to the latest one. This can be retrieved at runtime using `importlib`:
 
 ```python
 from importlib.metadata import PackageNotFoundError, version
@@ -777,7 +779,8 @@ $ git tag -a v0.2.0 -m "Minor changes for 0.2.0"
 $ git push --follow-tags
 ```
 
-But doing this manually is a not a necessary chore at all! To automatically bump the version, for instance on merges to a main branch, use a job like the following in GitHub actions:
+But doing this manually is a not a necessary chore at all! To automatically bump the version, for
+instance on merges to a main branch, use a job like the following in GitHub actions:
 
 ```yaml
 name: Default Branch PR Merged CI
@@ -819,10 +822,8 @@ jobs:
           GIT_API_TAGGING: false
 ```
 
-This will do a patch bump by default, but you can specify a major or minor bump by including `#major` or `#minor` in the merge commit message. No more thinking about versioning!
+This will do a patch bump by default, but you can specify a major or minor bump by including
+`#major` or `#minor` in the merge commit message. No more thinking about versioning!
 
-Now all your misgivings have been allayed, I hope that the next time you have to set up a Python project, you'll feel comfortable doing so using `pyproject.toml`.
-=======
 Now all your misgivings have been allayed, I hope that the next time you have to set up a Python
 project, you'll feel comfortable doing so using `pyproject.toml`.
->>>>>>> a9dcba1 (feat(content): Line breaks in pyproject)

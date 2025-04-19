@@ -21,23 +21,6 @@
   --body-max-width: 680px;
 }
 
-@font-face {
-  font-family: "source-serif-pro";
-  src: url("/fonts/source-serif-pro-400-normal.woff") format("woff");
-  font-style: normal;
-}
-@font-face {
-  font-family: "source-serif-pro";
-  src: url("/fonts/source-serif-pro-400-italic.woff") format("woff");
-  font-style: italic;
-}
-
-@font-face {
-  font-family: "junction";
-  src: url("/fonts/junction-bold.woff") format("woff");
-  font-style: bold;
-}
-
 html {
   scrollbar-gutter: stable;
 }
