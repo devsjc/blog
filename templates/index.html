@@ -12,8 +12,8 @@
     <link rel="shortcut icon"  href="{{ get_url(path="assets/favicon.ico") | safe }}" />
     <link rel="alternate" type="application/atom+xml" title="RSS" href="{{ get_url(path="atom.xml") | safe }}">
 
-    {% set data = load_data(path="public/style.css", format="plain") -%}
-    <style>{{ data | safe }}</style>
+    <style></style>
+    <link rel="stylesheet" href="/common.css?id=1">
 
     {% block seo -%}
       <meta property="og:site_name" content="{% block ogsitename %}{{config.title}}{% endblock ogsitename %}">
