@@ -14,9 +14,9 @@ some Linux distribution.
 
 A frantic search brings up many guides saying to install some graphical tool or other, which may or
 may not work on apple silicon and almost certainly will block you behind a paywall before you can
-create a USB.The reason these are suggested over the standard practice of copying the installation
+create a USB. The reason these are suggested over the standard practice of copying the installation
 files onto a freshly-formatted USB is that bootable Windows USBs must be FAT32 formatted, and FAT32
-has a maximum file size or 4GB - smaller than the size of one of the files within the Windows
+has a maximum file size of 4GB - smaller than the size of one of the files within the Windows
 installation media.
 
 Luckily there is a tool, freely available on Apple Silicon via [Homebrew](https://brew.sh/), that
