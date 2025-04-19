@@ -68,3 +68,4 @@ Included patches: 1-16
 ```
 
 Enjoy Vim 9.1 on your stable machine!
+
